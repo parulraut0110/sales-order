@@ -1,11 +1,16 @@
 package com.parul.sales_order.datasoure.config;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.Ordered;
 
-import lombok.Value;
+
+
 
 class A {
 	public A() {
@@ -54,18 +59,22 @@ class D implements Ordered {
 	}
 }
 
-
-
-
 @Configuration
+@EnableConfigurationProperties
+@ConfigurationProperties(prefix = "spring.datasource")             //injects multiple fields with properties matching the prefix from configuration file 
 public class ClassConfigTest {
 
-	//@Value("${C.cx}")
+	@Value("${C.cx}")                         //injects configuration properties (application.properties, system environment, ...) into fields or constructor
 	public int annotatedField;
+	
+	String username;
+	String password;
 	
 	@Bean(name = "A")
 	@DependsOn("B")
 	public A getA() {
+		System.out.println("value of cx : " + annotatedField);
+		showCredentials();
 		return new A();
 	}
 
@@ -84,5 +93,17 @@ public class ClassConfigTest {
 	public D getD() {
 		return new D();
 	}
+	
+	public void showCredentials() {
+		System.out.println("UserName : " + username + "  Password : " + password);
+	}
+	
+	public void setUsername(String username) {
+	        this.username = username;
+	    }
+	 
+	public void setPassword(String password) {
+	        this.password = password;
+	    }
 	
 }
