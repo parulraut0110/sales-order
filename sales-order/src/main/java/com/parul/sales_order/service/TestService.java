@@ -12,7 +12,8 @@ public class TestService {
 	ClassConfigTest configTest;
 	
 	@Bean
-	public void configTest() {
+	public TestService configTest() {
 		System.out.println("Testing DependsOn Annotation");
+		return new TestService();
 	}
 }

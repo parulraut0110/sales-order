@@ -10,11 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class OrderService {
 
-    @Autowired
+	/*
+	@Autowired
     private OrderRepo orderRepo;
 
     @Transactional
     public String getItemName(int orderId) {
         return orderRepo.getItemName(orderId);
     }
+    */
 }
