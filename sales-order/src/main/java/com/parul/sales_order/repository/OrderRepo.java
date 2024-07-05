@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.parul.sales_order.entity.Orders;
@@ -22,7 +23,23 @@ public interface OrderRepo extends JpaRepository<Orders, Integer> {
 	@Procedure(name = "get_order_details")
 	public Orders getOrderDetails(int orderId);
 	
-	@Query("SELECT o FROM Orders o WHERE o.unitPrice> ?1")
+	/*
+	@Query(value = "SELECT * FROM Orders o WHERE o.Price > ?1", nativeQuery = true)   //nativeQuery equal to true implies MySql else would imply JPQL   
 	public List<Orders> getOrders(float price);	
+	
+	@Query(value = "SELECT * FROM Orders o WHERE o.Price > :price", nativeQuery = true)   //:price implies 'named value' i.e provided as the argument price as the method    
+	                                                                                      //basically it binds the method parameter to the query parameter
+	public List<Orders> getOrders(@Param("price") float price);	
+	 */
+	
+	
+	@Query("SELECT o FROM Orders o WHERE o.unitPrice > :priCe")           //This is JPQL where java entity objects are used instead of tables 
+	public List<Orders> getOrders(@Param("priCe") float price);
+	
+	//@Query("SELECT o FROM Orders o WHERE o.orderDetails LIKE CONCAT('_', :detailS, '%')")
+	@Query("SELECT o FROM Orders o WHERE o.orderDetails LIKE CONCAT('_', '_', :detailS, '%')")
+	public List<Orders> getDetails(@Param("detailS") String details);
+
+	List<Orders> findByUnitPriceAndQuantity(float unitPrice, int quantity);
 }
 

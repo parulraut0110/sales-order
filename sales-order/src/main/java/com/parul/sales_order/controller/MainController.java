@@ -44,12 +44,18 @@ public class MainController {
 	   
 	   System.out.println("The orderDerails is : " + repo.getOrderDetails(1).getUnitPrice());
 	   
-	   List<Orders> orderList = repo.getOrders(10);
-		System.out.println(orderList.size());
-		for(Orders o : orderList) {
-			System.out.println("h");
-			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity());
-		}
+	   List<Orders> orderList = repo.getOrders(100);
+	   for(Orders o : orderList) 
+		   System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity());
+		
+		List<Orders> orderListByDetails = repo.getDetails("ve-soap");
+		for(Orders o : orderListByDetails) 
+			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity());	
+		
+		List<Orders> orderListByPriceAndQuantity = repo.findByUnitPriceAndQuantity(100.50F, 10);
+		for(Orders o : orderListByPriceAndQuantity) 
+			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity());	
 	   
+		
 	}
 }
