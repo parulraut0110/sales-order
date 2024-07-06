@@ -10,6 +10,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.NamedStoredProcedureQuery;
 import jakarta.persistence.ParameterMode;
 import jakarta.persistence.SequenceGenerator;
@@ -39,6 +41,14 @@ import java.util.Date;
 				@StoredProcedureParameter(mode = ParameterMode.IN, name = "orderId", type = Integer.class)
 		}
 		)
+
+@NamedQueries({
+    @NamedQuery(
+        name = "OrdersInUnitPriceRange",
+        query = "SELECT o FROM Orders o WHERE o.unitPrice > :startPrice AND o.unitPrice < :endPrice"
+    )
+})
+
 public class Orders {
 
     @Id

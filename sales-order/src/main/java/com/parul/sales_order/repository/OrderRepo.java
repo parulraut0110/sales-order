@@ -1,5 +1,6 @@
 package com.parul.sales_order.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.parul.sales_order.entity.Orders;
+
+import jakarta.persistence.NamedQuery;
 
 import org.springframework.stereotype.Repository;
 
@@ -36,10 +39,26 @@ public interface OrderRepo extends JpaRepository<Orders, Integer> {
 	@Query("SELECT o FROM Orders o WHERE o.unitPrice > :priCe")           //This is JPQL where java entity objects are used instead of tables 
 	public List<Orders> getOrders(@Param("priCe") float price);
 	
+	
 	//@Query("SELECT o FROM Orders o WHERE o.orderDetails LIKE CONCAT('_', :detailS, '%')")
 	@Query("SELECT o FROM Orders o WHERE o.orderDetails LIKE CONCAT('_', '_', :detailS, '%')")
 	public List<Orders> getDetails(@Param("detailS") String details);
 
 	List<Orders> findByUnitPriceAndQuantity(float unitPrice, int quantity);
+	
+	List<Orders> findDistinctByorderDetails(String orderDetails);
+	
+	List<Orders> findByOrderDateBetween(Date startDate, Date endDate);
+		
+	List<Orders> findByOrderDateGreaterThan(Date startDate);
+	
+	List<Orders> findByOrderDetailsStartingWith(String orderDetails);
+	
+	List<Orders> findByOrderDetailsEndingWith(String orderDetails);
+	
+	
+	@Query(name = "ordersInPriceRange")
+	public List<Orders> getOrdersInUnitPrice(@Param("startPrice") float startPrice, @Param("endPrice") float endPrice);
+		
 }
 
