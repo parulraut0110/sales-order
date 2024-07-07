@@ -108,5 +108,12 @@ public class MainController {
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());	
 		 */
 		System.out.println();
+		
+		List<Orders> orderListByPriceRange = repo.ordersForPriceLimits(150.00F, 1000.00F);
+		for(Orders o : orderListByPriceRange) 
+			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());	
+
+		System.out.println();
+		
 	}
 }

@@ -55,10 +55,14 @@ public interface OrderRepo extends JpaRepository<Orders, Integer> {
 	List<Orders> findByOrderDetailsStartingWith(String orderDetails);
 	
 	List<Orders> findByOrderDetailsEndingWith(String orderDetails);
-	
-	
+	 
+	/*
 	@Query(name = "ordersInPriceRange")
 	public List<Orders> getOrdersInUnitPrice(@Param("startPrice") float startPrice, @Param("endPrice") float endPrice);
-		
+	 */
+	
+	@Query(name = "findByOrderPriceRange")
+	public List<Orders> ordersForPriceLimits(@Param("lowerPrice") float startPrice, @Param("upperPrice") float endPrice);
+	
 }
 

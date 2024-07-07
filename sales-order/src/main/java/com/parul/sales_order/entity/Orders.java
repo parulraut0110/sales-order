@@ -41,14 +41,14 @@ import java.util.Date;
 				@StoredProcedureParameter(mode = ParameterMode.IN, name = "orderId", type = Integer.class)
 		}
 		)
-
+/*
 @NamedQueries({
     @NamedQuery(
         name = "OrdersInUnitPriceRange",
         query = "SELECT o FROM Orders o WHERE o.unitPrice > :startPrice AND o.unitPrice < :endPrice"
     )
 })
-
+*/
 public class Orders {
 
     @Id
