@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Component
 @NamedNativeQuery(
-	name = "findByOrderPriceRange",
+	name = "findOrdersByPriceRange",
 	query = "SELECT"
 			+ "    r.Order_ID as orderId,"
 			+ "    r.Order_Details as orderDetails,"
@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 			+ "    (SELECT"
 			+ "         o.Order_ID,"
 			+ "         o.Order_Details,"
-			+ "         o.Order * o.Quantity AS OrderAmount,"
+			+ "         o.Price * o.Quantity AS OrderAmount,"
 			+ "         o.Quantity,"
 			+ "         o.Order_Date"
 			+ "     FROM"
@@ -40,10 +40,10 @@ import lombok.NoArgsConstructor;
 			+ "     WHERE"
 			+ "         o.Price * o.Quantity > :lowerPrice"
 			+ "         AND o.Price * o.Quantity < :upperPrice) r",
-	resultClass = OrderDTO.class
+	resultSetMapping = "dtoResultSetMapping"		
 )
 @SqlResultSetMapping(
-	    name = "findByOrderPriceRange",
+	    name = "dtoResultSetMapping",
 	    classes = @ConstructorResult(
 	        targetClass = OrderDTO.class,
 	        columns = {

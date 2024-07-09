@@ -1,6 +1,7 @@
 package com.parul.sales_order.repository;
 
 import java.util.Date;
+
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.parul.sales_order.entity.Orders;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceUnit;
 
 import org.springframework.stereotype.Repository;
 
@@ -19,9 +24,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderRepo extends JpaRepository<Orders, Integer> {
 	
+	@PersistenceUnit	
+	public EntityManagerFactory emf = null;
+	
 	@Procedure(name = "get_item")
 	public String getItemName(int orderId);
-	
 	
 	@Procedure(name = "get_order_details")
 	public Orders getOrderDetails(int orderId);
@@ -61,8 +68,8 @@ public interface OrderRepo extends JpaRepository<Orders, Integer> {
 	public List<Orders> getOrdersInUnitPrice(@Param("startPrice") float startPrice, @Param("endPrice") float endPrice);
 	 */
 	
-	@Query(name = "findByOrderPriceRange")
-	public List<Orders> ordersForPriceLimits(@Param("lowerPrice") float startPrice, @Param("upperPrice") float endPrice);
+	@Query(name = "findOrdersByPriceRange", nativeQuery = true)
+	public List<Orders> ordersInPriceLimit(@Param("lowerPrice") float startPrice, @Param("upperPrice") float endPrice);
 	
 }
 

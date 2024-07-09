@@ -18,6 +18,8 @@ import com.parul.sales_order.repository.OrderRepo;
 import com.parul.sales_order.service.OrderService;
 import com.parul.sales_order.service.TestService;
 
+import jakarta.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,8 +33,6 @@ public class MainController {
 	//@Autowired
 	//OrderService orderService;
 
-
-
 	@Autowired
 	TestService testService;
 
@@ -42,7 +42,6 @@ public class MainController {
 	@Transactional
 	@GetMapping("/getItemName/{orderId}")
 	public void printOrderName(@PathVariable Integer orderId) throws ParseException {
-
 
 		//System.out.println("The order name is : " + orderService.getItemName(orderId));
 		System.out.println("The order id is : " + orderId);
@@ -74,7 +73,7 @@ public class MainController {
 		System.out.println();
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Date startDate = sdf.parse("2024-08-13");
+		Date startDate = sdf.parse("2024-08-13");               //create a 'Data' object corresponding to string input provided
 		Date endDate = sdf.parse("2024-08-17");
 		
 		List<Orders> orderListByOrderDate = repo.findByOrderDateBetween(startDate, endDate);
@@ -109,7 +108,7 @@ public class MainController {
 		 */
 		System.out.println();
 		
-		List<Orders> orderListByPriceRange = repo.ordersForPriceLimits(150.00F, 1000.00F);
+		List<Orders> orderListByPriceRange = repo.ordersInPriceLimit(150.00F, 1000.00F);
 		for(Orders o : orderListByPriceRange) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());	
 
