@@ -1,6 +1,7 @@
 package com.parul.sales_order.dto;
 
 import java.util.Date;
+import jakarta.persistence.FieldResult;
 import jakarta.persistence.SqlResultSetMapping;
 import jakarta.persistence.ConstructorResult;
 import jakarta.persistence.EntityResult;
@@ -20,41 +21,19 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @Component
-@NamedNativeQuery(
-	name = "findOrdersByPriceRange",
-	query = "SELECT"
-			+ "    r.Order_ID as orderId,"
-			+ "    r.Order_Details as orderDetails,"
-			+ "    r.Order_Amount as orderAmount,"
-			+ "    r.Quantity as quantity,"
-			+ "    r.Order_Date as orderDate"
-			+ "FROM"
-			+ "    (SELECT"
-			+ "         o.Order_ID,"
-			+ "         o.Order_Details,"
-			+ "         o.Price * o.Quantity AS OrderAmount,"
-			+ "         o.Quantity,"
-			+ "         o.Order_Date"
-			+ "     FROM"
-			+ "         Orders o"
-			+ "     WHERE"
-			+ "         o.Price * o.Quantity > :lowerPrice"
-			+ "         AND o.Price * o.Quantity < :upperPrice) r",
-	resultSetMapping = "dtoResultSetMapping"		
-)
 @SqlResultSetMapping(
-	    name = "dtoResultSetMapping",
-	    classes = @ConstructorResult(
-	        targetClass = OrderDTO.class,
-	        columns = {
-	            @ColumnResult(name = "orderId", type = Integer.class),
-	            @ColumnResult(name = "orderDetails", type = String.class),
-	            @ColumnResult(name = "orderAmount", type = Float.class),
-	            @ColumnResult(name = "quantity", type = Integer.class),
-	            @ColumnResult(name = "orderDate", type = java.util.Date.class)
-	        }
-	    )
-	)
+		name = "entityResultSetMapping",
+		entities = @EntityResult(
+				entityClass = OrderDTO.class,
+				fields = {
+						@FieldResult(name = "orderId", column = "o.Order_ID"),
+						@FieldResult(name = "orderDetails", column = "orderDetails"),
+						@FieldResult(name = "orderAmount", column = "orderAmount"),
+						@FieldResult(name = "quantity", column = "quantity"),
+						@FieldResult(name = "orderDate", column= "orderDate")
+				}
+				)
+		)
 public class OrderDTO {
 	int orderId;
 	String orderDetails;
