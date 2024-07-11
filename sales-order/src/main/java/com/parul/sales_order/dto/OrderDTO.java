@@ -1,46 +1,45 @@
 package com.parul.sales_order.dto;
 
+import java.io.Serializable;
 import java.util.Date;
-import jakarta.persistence.FieldResult;
-import jakarta.persistence.SqlResultSetMapping;
-import jakarta.persistence.ConstructorResult;
-import jakarta.persistence.EntityResult;
-import jakarta.persistence.ColumnResult;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.stereotype.Component;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.NamedNativeQuery;
-import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @Component
+/*
 @SqlResultSetMapping(
-		name = "entityResultSetMapping",
-		entities = @EntityResult(
-				entityClass = OrderDTO.class,
-				fields = {
-						@FieldResult(name = "orderId", column = "o.Order_ID"),
-						@FieldResult(name = "orderDetails", column = "orderDetails"),
-						@FieldResult(name = "orderAmount", column = "orderAmount"),
-						@FieldResult(name = "quantity", column = "quantity"),
-						@FieldResult(name = "orderDate", column= "orderDate")
-				}
-				)
-		)
-public class OrderDTO {
-	int orderId;
-	String orderDetails;
-	float orderAmount;
-	int quantity;
-	Date orderDate;
-	
+    name = "orderDTOMapping",
+    classes = @ConstructorResult(
+        targetClass = OrderDTO.class,
+        columns = {
+            @ColumnResult(name = "orderId", type = Integer.class),
+            @ColumnResult(name = "orderDetails", type = String.class),
+            @ColumnResult(name = "orderAmount", type = Float.class),
+            @ColumnResult(name = "quantity", type = Integer.class),
+            @ColumnResult(name = "orderDate", type = Date.class)
+        }
+    )
+)
+*/
+public class OrderDTO implements Serializable {
+    @Id
+    private int orderId;
+    private String orderDetails;
+    private float orderAmount;
+    private int quantity;
+    private Date orderDate;
+
+    public OrderDTO(int orderId, String orderDetails, float orderAmount, int quantity, Date orderDate) {
+        this.orderId = orderId;
+        this.orderDetails = orderDetails;
+        this.orderAmount = orderAmount;
+        this.quantity = quantity;
+        this.orderDate = orderDate;
+    }
 }
-
-
