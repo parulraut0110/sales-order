@@ -26,6 +26,7 @@ import lombok.Data;
         @StoredProcedureParameter(mode = ParameterMode.IN, name = "orderId", type = Integer.class)
     }
 )
+/*
 @NamedNativeQuery(
     name = "findOrdersByPriceRange",
     query = "SELECT "
@@ -39,8 +40,8 @@ import lombok.Data;
             + "AND o.Price * o.Quantity < :upperPrice",
     resultSetMapping = "orderDTOMapping"
 )
-
-
+*/
+/*
 @SqlResultSetMapping(
     name = "orderDTOMapping",
     classes = @ConstructorResult(
@@ -54,7 +55,36 @@ import lombok.Data;
         }
     )
 )
+*/
 
+@NamedNativeQuery(
+	    name = "findOrdersByPriceRange",
+	    query = "SELECT "
+	            + "o.Order_ID as orderId, "
+	            + "o.Order_Details as orderDetails, "
+	            + "o.Price as price"
+	            + "o.Quantity as quantity, "
+	            + "o.Order_Date as orderDate "
+	            + "FROM Orders o "
+	            + "WHERE o.Price * o.Quantity > :lowerPrice "
+	            + "AND o.Price * o.Quantity < :upperPrice",
+	            
+	    resultSetMapping = "orderDTOEntityMapping"
+	)
+
+@SqlResultSetMapping(
+	    name = "orderDTOEntityMapping",
+	    entities = @EntityResult(
+	        entityClass = Orders.class,
+	        fields = {
+	            @FieldResult(name = "orderId", column = "orderId"),
+	            @FieldResult(name = "orderDetails", column = "orderDetails"),
+	            @FieldResult(name = "price", column = "price"),
+	            @FieldResult(name = "quantity", column = "quantity"),
+	            @FieldResult(name = "orderDate", column = "orderDate")
+	        }
+	    )
+	)
 
 public class Orders {
 

@@ -1,6 +1,7 @@
 package com.parul.sales_order.dto;
 
 import java.io.Serializable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import java.util.Date;
 
 import org.springframework.stereotype.Component;
@@ -27,8 +28,9 @@ import lombok.NoArgsConstructor;
     )
 )
 */
-public class OrderDTO implements Serializable {
-    @Id
+
+public class OrderDTO {
+
     private int orderId;
     private String orderDetails;
     private float orderAmount;

@@ -112,9 +112,17 @@ public class MainController {
 		 */
 		System.out.println();
 		
-		
+		/*
 		List<OrderDTO> orderListByPriceRange = repo.ordersInPriceLimit(150.00F, 1000.00F);
 		for(OrderDTO o : orderListByPriceRange) 
+			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());	
+
+		System.out.println();
+		*/
+		
+		
+		List<Orders> orderListByPriceRange = repo.ordersInPriceLimit(150.00F, 1000.00F);
+		for(Orders o : orderListByPriceRange) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());	
 
 		System.out.println();

@@ -53,17 +53,17 @@ public interface OrderRepo extends JpaRepository<Orders, Integer> {
 	@Query("SELECT o FROM Orders o WHERE o.orderDetails LIKE CONCAT('_', '_', :detailS, '%')")
 	public List<Orders> getDetails(@Param("detailS") String details);
 
-	List<Orders> findByUnitPriceAndQuantity(float unitPrice, int quantity);
+	public List<Orders> findByUnitPriceAndQuantity(float unitPrice, int quantity);
 	
-	List<Orders> findDistinctByorderDetails(String orderDetails);
+	public List<Orders> findDistinctByorderDetails(String orderDetails);
 	
-	List<Orders> findByOrderDateBetween(Date startDate, Date endDate);
+	public List<Orders> findByOrderDateBetween(Date startDate, Date endDate);
 		
-	List<Orders> findByOrderDateGreaterThan(Date startDate);
+	public List<Orders> findByOrderDateGreaterThan(Date startDate);
 	
-	List<Orders> findByOrderDetailsStartingWith(String orderDetails);
+	public List<Orders> findByOrderDetailsStartingWith(String orderDetails);
 	
-	List<Orders> findByOrderDetailsEndingWith(String orderDetails);
+	public List<Orders> findByOrderDetailsEndingWith(String orderDetails);
 	 
 	/*
 	@Query(name = "ordersInPriceRange")
@@ -71,7 +71,7 @@ public interface OrderRepo extends JpaRepository<Orders, Integer> {
 	 */
 	  
 	@Query(name = "findOrdersByPriceRange", nativeQuery = true)
-	public List<OrderDTO> ordersInPriceLimit(@Param("lowerPrice") float startPrice, @Param("upperPrice") float endPrice);
+	public List<Orders> ordersInPriceLimit(@Param("lowerPrice") float startPrice, @Param("upperPrice") float endPrice);
 	
 }
 
