@@ -1,5 +1,7 @@
 package com.parul.sales_order.entity;
 
-public class Customer {
+import java.io.Serializable;
+
+public class Customer implements Serializable{
 
 }
