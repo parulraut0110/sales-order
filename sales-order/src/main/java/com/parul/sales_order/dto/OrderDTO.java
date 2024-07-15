@@ -14,24 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Component
-/*
-@SqlResultSetMapping(
-    name = "orderDTOMapping",
-    classes = @ConstructorResult(
-        targetClass = OrderDTO.class,
-        columns = {
-            @ColumnResult(name = "orderId", type = Integer.class),
-            @ColumnResult(name = "orderDetails", type = String.class),
-            @ColumnResult(name = "orderAmount", type = Float.class),
-            @ColumnResult(name = "quantity", type = Integer.class),
-            @ColumnResult(name = "orderDate", type = Date.class)
-        }
-    )
-)
-*/
-public class OrderDTO implements Serializable {
+public class OrderDTO {
 	
-	private static final long serialVersionUID = 2L;
     @Id
     private int orderId;
     private String orderDetails;

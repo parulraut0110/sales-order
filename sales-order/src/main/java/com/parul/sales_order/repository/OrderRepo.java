@@ -5,6 +5,9 @@ import java.util.Date;
 
 import java.util.List;
 
+import org.springframework.data.domain.OffsetScrollPosition;
+import org.springframework.data.domain.ScrollPosition;
+import org.springframework.data.domain.Window;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
@@ -71,7 +74,11 @@ public interface OrderRepo extends JpaRepository<Orders, Integer> {
 	 */
 	  
 	@Query(name = "findOrdersByPriceRange", nativeQuery = true)
-	public List<Orders> ordersInPriceLimit(@Param("lowerPrice") float startPrice, @Param("upperPrice") float endPrice);
+	public List<OrderDTO> ordersInPriceLimit(@Param("lowerPrice") float startPrice, @Param("upperPrice") float endPrice);
+	
+	
+	public Window<Orders> findFirst10ByUnitPriceGreaterThan(float price, ScrollPosition position);
+
 	
 }
 

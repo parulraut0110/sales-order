@@ -31,67 +31,41 @@ import lombok.Data;
 @SqlResultSetMapping(
 	    name = "orderDTOMapping",
 	    classes = @ConstructorResult(
-	        targetClass = Orders.class,
+	        targetClass = OrderDTO.class,
 	        columns = {
 	            @ColumnResult(name = "orderId", type = Integer.class),
 	            @ColumnResult(name = "orderDetails", type = String.class),
-	            @ColumnResult(name = "unitPrice", type = Float.class),
-	            //@ColumnResult(name = "orderAmount", type = Float.class),
+	            @ColumnResult(name = "orderAmount", type = Float.class),
 	            @ColumnResult(name = "quantity", type = Integer.class),
 	            @ColumnResult(name = "orderDate", type = Date.class)
 	        }
 	    )
 	)
 
-@NamedNativeQuery(
-    name = "findOrdersByPriceRange",
-    query = "SELECT * "
-    /*
-            + "order_id as orderId, "
-            + "Order_Details as orderDetails, "
-            //+ "Price * Quantity AS orderAmount, "
-            + "Quantity as quantity, "
-            + "Price as unitPrice, "
-            + "Order_Date as orderDate "
-     */        
-            + "FROM Orders "
-            + "WHERE Price * Quantity > :lowerPrice "
-            + "AND Price * Quantity < :upperPrice",
-           
-    //resultSetMapping = "orderDTOMapping",
-    resultClass = Orders.class
-)
 
-
-/*
 @NamedNativeQuery(
 	    name = "findOrdersByPriceRange",
-	    query = "SELECT * "
-	    
+	    query = "SELECT "
 	            + "o.Order_ID as orderId, "
 	            + "o.Order_Details as orderDetails, "
-	            + "o.Price as price, "
-	           // + "o.Price * o.Quantity as orderAmount, "
+	            + "o.Price * o.Quantity as orderAmount, "
 	            + "o.Quantity as quantity, "
 	            + "o.Order_Date as orderDate "
-	            
 	            + "FROM Orders o "
 	            + "WHERE o.Price * o.Quantity > :lowerPrice "
 	            + "AND o.Price * o.Quantity < :upperPrice",
 	          
-	    //resultSetMapping = "orderDTOEntityMapping"
-	    resultClass = Orders.class        
+	    resultSetMapping = "orderDTOMapping",
+	    resultClass = OrderDTO.class
 	)
-*/
+
 
 
 public class Orders implements Serializable {
-	
-	 private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_id")
+    @Column(name = "Order_Id")
     private int orderId;
 
     @Column(name = "Order_Details")

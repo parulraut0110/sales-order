@@ -11,6 +11,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.OffsetScrollPosition;
+import org.springframework.data.domain.ScrollPosition;
+import org.springframework.data.domain.Window;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.parul.sales_order.datasoure.config.ClassConfigTest;
@@ -81,6 +84,7 @@ public class MainController {
 		Date endDate = sdf.parse("2024-08-17");
 		
 		List<Orders> orderListByOrderDate = repo.findByOrderDateBetween(startDate, endDate);
+		System.out.println("orderListByOrderDate ");
 		for(Orders o : orderListByOrderDate) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());	
 
@@ -88,6 +92,7 @@ public class MainController {
 		
 		
 		List<Orders> orderListByOrderDateGreaterThan = repo.findByOrderDateGreaterThan(startDate);
+		System.out.println("orderListByOrderDateGreaterThan ");
 		for(Orders o : orderListByOrderDateGreaterThan) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());	
 
@@ -95,12 +100,14 @@ public class MainController {
 		
 		
 		List<Orders> orderListByOrderDetailsStartingWith = repo.findByOrderDetailsStartingWith("Smart");
+		System.out.println("orderListByOrderDetailsStartingWith  : Smart ");
 		for(Orders o : orderListByOrderDetailsStartingWith) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());	
 
 		System.out.println();
 		
 		List<Orders> orderListByOrderDetailsEndingWith = repo.findByOrderDetailsEndingWith("er");
+		System.out.println("orderListByOrderDetailsEndingWith  : er ");
 		for(Orders o : orderListByOrderDetailsEndingWith) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());	
 
@@ -121,11 +128,31 @@ public class MainController {
 		*/
 		
 		
-		List<Orders> orderListByPriceRange = repo.ordersInPriceLimit(150.00F, 1000.00F);
-		for(Orders o : orderListByPriceRange) 
-			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());	
+		List<OrderDTO> orderListByPriceRange = repo.ordersInPriceLimit(150.00F, 1000.00F);
+		System.out.println("orderListByPriceRange");
+		for(OrderDTO o : orderListByPriceRange) 
+			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
 
 		System.out.println();
 		
-	}
+		
+
+ScrollPosition position = ScrollPosition.offset();
+System.out.println("position : " + position.toString());
+Window<Orders> orders = repo.findFirst10ByUnitPriceGreaterThan(0.00F, position);
+
+do {
+    for (Orders o : orders) 
+        System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());
+    
+    if (!orders.isEmpty() && orders.hasNext()) {
+        // Ensure that positionAt returns an OffsetScrollPosition
+        position = orders.positionAt(orders.size() - 1);
+        orders = repo.findFirst10ByUnitPriceGreaterThan(0.00F, position);
+    } else {
+        break;
+    }
+} while (true);
+
+}
 }
