@@ -3,6 +3,7 @@ package com.parul.sales_order.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -10,9 +11,13 @@ import java.util.List;
 import java.util.Calendar;
 import java.util.Date;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.OffsetScrollPosition;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.ScrollPosition;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Window;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,52 +65,52 @@ public class MainController {
 	   for(Orders o : orderList) 
 		   System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity());
 		 */
-		
+
 		List<Orders> orderListByDetails = repo.getDetails("ve soap");
 		for(Orders o : orderListByDetails) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity());	
-		
+
 		System.out.println();
 
 		List<Orders> orderListByPriceAndQuantity = repo.findByUnitPriceAndQuantity(3.50F, 10);
 		for(Orders o : orderListByPriceAndQuantity) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity());	
-		
+
 		System.out.println();
 
 		List<Orders> orderListByOrderDetails = repo.findDistinctByorderDetails("Dove");
 		for(Orders o : orderListByOrderDetails) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity());	
-		
+
 		System.out.println();
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date startDate = sdf.parse("2024-08-13");               //create a 'Data' object corresponding to string input provided
 		Date endDate = sdf.parse("2024-08-17");
-		
+
 		List<Orders> orderListByOrderDate = repo.findByOrderDateBetween(startDate, endDate);
 		System.out.println("orderListByOrderDate ");
 		for(Orders o : orderListByOrderDate) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());	
 
 		System.out.println();
-		
-		
+
+
 		List<Orders> orderListByOrderDateGreaterThan = repo.findByOrderDateGreaterThan(startDate);
 		System.out.println("orderListByOrderDateGreaterThan ");
 		for(Orders o : orderListByOrderDateGreaterThan) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());	
 
 		System.out.println();
-		
-		
+
+
 		List<Orders> orderListByOrderDetailsStartingWith = repo.findByOrderDetailsStartingWith("Smart");
 		System.out.println("orderListByOrderDetailsStartingWith  : Smart ");
 		for(Orders o : orderListByOrderDetailsStartingWith) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());	
 
 		System.out.println();
-		
+
 		List<Orders> orderListByOrderDetailsEndingWith = repo.findByOrderDetailsEndingWith("er");
 		System.out.println("orderListByOrderDetailsEndingWith  : er ");
 		for(Orders o : orderListByOrderDetailsEndingWith) 
@@ -118,41 +123,68 @@ public class MainController {
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());	
 		 */
 		System.out.println();
-		
+
 		/*
 		List<OrderDTO> orderListByPriceRange = repo.ordersInPriceLimit(150.00F, 1000.00F);
 		for(OrderDTO o : orderListByPriceRange) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());	
 
 		System.out.println();
-		*/
-		
-		
+		 */
+
+
 		List<OrderDTO> orderListByPriceRange = repo.ordersInPriceLimit(150.00F, 1000.00F);
 		System.out.println("orderListByPriceRange");
 		for(OrderDTO o : orderListByPriceRange) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
 
 		System.out.println();
+
+
+		/*
+		ScrollPosition position = ScrollPosition.offset();
+		System.out.println("position : " + position.toString());
+		Window<Orders> orders = repo.findFirst10ByUnitPriceGreaterThan(0.00F, position);
+
 		
+		do {
+			for (Orders o : orders) 
+				System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());
+
+			if (!orders.isEmpty() && orders.hasNext()) {
+				// Ensure that positionAt returns an OffsetScrollPosition
+				position = orders.positionAt(orders.size() - 1);
+				orders = repo.findFirst10ByUnitPriceGreaterThan(0.00F, position);
+			} else {
+				break;
+			}
+		} while (true);
+        */
+		
+		Window<Orders> orders = repo.findFirst10ByUnitPriceGreaterThan(0.0F, ScrollPosition.offset());          //offset returns the scroll position value as an object at beginning it returns 0 but there after advances the scroll position corresponding the windows size    
+		
+		do {
+			for (Orders o : orders) 
+				System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());        
+
+			orders = repo.findFirst10ByUnitPriceGreaterThan(0.0F, orders.positionAt(orders.size() - 1));
+		} while (!orders.isEmpty());
+		System.out.println();
 		
 
-ScrollPosition position = ScrollPosition.offset();
-System.out.println("position : " + position.toString());
-Window<Orders> orders = repo.findFirst10ByUnitPriceGreaterThan(0.00F, position);
+		int pageNo = 0;
+		int pageSize = 10;
+		Page<Orders> ordersByPage = repo.findFirst6ByUnitPriceGreaterThan(50.0F, PageRequest.of(pageNo, pageSize, Sort.by("unitPrice").ascending().and(Sort.by("orderId").ascending().and(Sort.by("quantity").descending()))));          
+		
+		do {			
+            ordersByPage.forEach(order -> System.out.println(
+            		order.getOrderId() + " " + order.getOrderDetails() + " " + order.getUnitPrice() + " " + order.getQuantity() + " " + order.getOrderDate()));
+            
+            ordersByPage = repo.findFirst6ByUnitPriceGreaterThan(50.0F, PageRequest.of(++pageNo, pageSize, Sort.by("unitPrice").ascending().and(Sort.by("orderId").ascending().and(Sort.by("quantity").descending()))));          
 
-do {
-    for (Orders o : orders) 
-        System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());
-    
-    if (!orders.isEmpty() && orders.hasNext()) {
-        // Ensure that positionAt returns an OffsetScrollPosition
-        position = orders.positionAt(orders.size() - 1);
-        orders = repo.findFirst10ByUnitPriceGreaterThan(0.00F, position);
-    } else {
-        break;
-    }
-} while (true);
+        } while (ordersByPage.hasNext());
+	
+	}
+}
 
-}
-}
+

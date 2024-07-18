@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.OffsetScrollPosition;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.ScrollPosition;
 import org.springframework.data.domain.Window;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -78,6 +80,8 @@ public interface OrderRepo extends JpaRepository<Orders, Integer> {
 	
 	
 	public Window<Orders> findFirst10ByUnitPriceGreaterThan(float price, ScrollPosition position);
+	
+	public Page<Orders> findFirst6ByUnitPriceGreaterThan(float price, Pageable pageable);
 
 	
 }
