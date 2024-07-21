@@ -183,7 +183,24 @@ public class MainController {
             ordersByPage = repo.findFirst6ByUnitPriceGreaterThan(50.0F, PageRequest.of(++pageNo, pageSize, Sort.by("unitPrice").ascending().and(Sort.by("orderId").ascending().and(Sort.by("quantity").descending()))));          
 
         } while (ordersByPage.hasNext());
-	
+		System.out.println();
+		
+		
+		System.out.println("\nunsorted Orders\n");
+		List<Orders> allOrders = repo.findAllOrders();
+		for(Orders o : allOrders) 
+			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
+
+		System.out.println();
+		
+		/*
+		System.out.println("\nSorted Orders\n");
+		List<Orders> getAllOrders = repo.getAllOrders();
+		for(Orders o : getAllOrders) 
+			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
+
+		System.out.println();
+		*/
 	}
 }
 

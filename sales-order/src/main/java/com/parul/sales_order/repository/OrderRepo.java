@@ -16,6 +16,7 @@ import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.parul.sales_order.datasoure.config.MyQueryReWriter;
 import com.parul.sales_order.dto.OrderDTO;
 import com.parul.sales_order.entity.Orders;
 
@@ -82,7 +83,18 @@ public interface OrderRepo extends JpaRepository<Orders, Integer> {
 	public Window<Orders> findFirst10ByUnitPriceGreaterThan(float price, ScrollPosition position);
 	
 	public Page<Orders> findFirst6ByUnitPriceGreaterThan(float price, Pageable pageable);
-
+	
+	@Query(value = "Select * from Orders order by Price ASC",
+			nativeQuery = true)
+	public List<Orders> findAllOrders();
+	
+	/*
+	@Query(value = "Select o from Orders order by unitPrice ASC", 
+		   nativeQuery = true,
+		   queryRewriter = MyQueryReWriter.class)
+	public List<Orders> getAllOrders();
+*/
+	
 	
 }
 
