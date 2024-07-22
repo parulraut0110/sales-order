@@ -7,9 +7,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyQueryReWriter implements QueryRewriter {
 
-	@Override
-	public String rewrite(String query, Sort sort) {
-		return null;
-	}
+    @Override
+    public String rewrite(String query, Sort sort) {
+    	System.out.println("query1 " + query);
+        String baseQuery = query.split("order by")[0].trim();
 
+        return query;
+    }
 }

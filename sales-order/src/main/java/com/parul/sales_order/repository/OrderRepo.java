@@ -9,6 +9,7 @@ import org.springframework.data.domain.OffsetScrollPosition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.ScrollPosition;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Window;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -88,12 +89,9 @@ public interface OrderRepo extends JpaRepository<Orders, Integer> {
 			nativeQuery = true)
 	public List<Orders> findAllOrders();
 	
-	/*
-	@Query(value = "Select o from Orders order by unitPrice ASC", 
-		   nativeQuery = true,
-		   queryRewriter = MyQueryReWriter.class)
-	public List<Orders> getAllOrders();
-*/
+	
+	@Query(value = "Select a from Orders a", queryRewriter = MyQueryReWriter.class)
+    List<Orders> getAllOrders(Sort sort);
 	
 	
 }

@@ -193,14 +193,21 @@ public class MainController {
 
 		System.out.println();
 		
-		/*
+		
 		System.out.println("\nSorted Orders\n");
-		List<Orders> getAllOrders = repo.getAllOrders();
-		for(Orders o : getAllOrders) 
-			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
+		//List<Orders> getAllOrders = repo.getAllOrders(Sort.sort(Orders.class).by("orderId").ascending());
+		
+		  List<Orders> getAllOrders = repo.getAllOrders(
+		            Sort.by(Sort.Order.asc("orderId"))
+		                .and(Sort.by(Sort.Order.asc("unitPrice")))
+		                .and(Sort.by(Sort.Order.asc("orderDetails")))
+		        );
 
+		  for (Orders o : getAllOrders) 
+		        System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());
+		
 		System.out.println();
-		*/
+		
 	}
 }
 
