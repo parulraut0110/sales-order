@@ -146,7 +146,7 @@ public class MainController {
 		System.out.println("position : " + position.toString());
 		Window<Orders> orders = repo.findFirst10ByUnitPriceGreaterThan(0.00F, position);
 
-		
+
 		do {
 			for (Orders o : orders) 
 				System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());
@@ -159,10 +159,10 @@ public class MainController {
 				break;
 			}
 		} while (true);
-        */
-		
+		 */
+
 		Window<Orders> orders = repo.findFirst10ByUnitPriceGreaterThan(0.0F, ScrollPosition.offset());          //offset returns the scroll position value as an object at beginning it returns 0 but there after advances the scroll position corresponding the windows size    
-		
+
 		do {
 			for (Orders o : orders) 
 				System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate());        
@@ -170,43 +170,60 @@ public class MainController {
 			orders = repo.findFirst10ByUnitPriceGreaterThan(0.0F, orders.positionAt(orders.size() - 1));
 		} while (!orders.isEmpty());
 		System.out.println();
-		
+
 
 		int pageNo = 0;
 		int pageSize = 10;
 		Page<Orders> ordersByPage = repo.findFirst6ByUnitPriceGreaterThan(50.0F, PageRequest.of(pageNo, pageSize, Sort.by("unitPrice").ascending().and(Sort.by("orderId").ascending().and(Sort.by("quantity").descending()))));          
-		
-		do {			
-            ordersByPage.forEach(order -> System.out.println(
-            		order.getOrderId() + " " + order.getOrderDetails() + " " + order.getUnitPrice() + " " + order.getQuantity() + " " + order.getOrderDate()));
-            
-            ordersByPage = repo.findFirst6ByUnitPriceGreaterThan(50.0F, PageRequest.of(++pageNo, pageSize, Sort.by("unitPrice").ascending().and(Sort.by("orderId").ascending().and(Sort.by("quantity").descending()))));          
 
-        } while (ordersByPage.hasNext());
+		do {			
+			ordersByPage.forEach(order -> System.out.println(
+					order.getOrderId() + " " + order.getOrderDetails() + " " + order.getUnitPrice() + " " + order.getQuantity() + " " + order.getOrderDate()));
+
+			ordersByPage = repo.findFirst6ByUnitPriceGreaterThan(50.0F, PageRequest.of(++pageNo, pageSize, Sort.by("unitPrice").ascending().and(Sort.by("orderId").ascending().and(Sort.by("quantity").descending()))));          
+
+		} while (ordersByPage.hasNext());
 		System.out.println();
-		
-		
+
+
 		System.out.println("\nunsorted Orders\n");
 		List<Orders> allOrders = repo.findAllOrders();
 		for(Orders o : allOrders) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
 
 		System.out.println();
-		
-		
+
+
 		System.out.println("\nSorted Orders\n");
 		//List<Orders> getAllOrders = repo.getAllOrders(Sort.sort(Orders.class).by("orderId").ascending());
-		
-		  List<Orders> getAllOrders = repo.getAllOrders(
-		            Sort.by(Sort.Order.asc("orderId"))
-		                .and(Sort.by(Sort.Order.asc("unitPrice")))
-		                .and(Sort.by(Sort.Order.asc("orderDetails")))
-		        );
 
-		  for (Orders o : getAllOrders) 
-		        System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());
-		
+		List<Orders> getAllOrders = repo.getAllOrders(
+				Sort.by(Sort.Order.asc("orderId"))
+				.and(Sort.by(Sort.Order.asc("unitPrice")))
+				.and(Sort.by(Sort.Order.asc("orderDetails")))
+				);
+
+		for (Orders o : getAllOrders) 
+			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());
+
 		System.out.println();
+
+		
+		
+		pageNo = 0;
+		Page<Orders> getAllOrdersByPage;
+		do {
+			getAllOrdersByPage = repo.getAllOrdersByPage(PageRequest.of(pageNo, 10));
+
+			for (Orders o : getAllOrdersByPage.getContent())                          //getContents provides the page content as a list 
+				System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());
+			pageNo++;
+			getAllOrdersByPage = repo.getAllOrdersByPage(PageRequest.of(pageNo, 10));
+
+		} while(getAllOrdersByPage.hasNext());  
+		System.out.println();
+
+		
 		
 	}
 }

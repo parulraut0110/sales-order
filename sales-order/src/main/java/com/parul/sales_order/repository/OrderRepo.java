@@ -3,6 +3,7 @@ package com.parul.sales_order.repository;
 import java.util.Date;
 
 
+
 import java.util.List;
 
 import org.springframework.data.domain.OffsetScrollPosition;
@@ -28,6 +29,8 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceUnit;
 
 import org.springframework.stereotype.Repository;
+
+import com.parul.sales_order.datasoure.config.*;
 
 
 @Repository
@@ -90,8 +93,13 @@ public interface OrderRepo extends JpaRepository<Orders, Integer> {
 	public List<Orders> findAllOrders();
 	
 	
-	@Query(value = "Select a from Orders a", queryRewriter = MyQueryReWriter.class)
+	@Query(value = "Select o from Orders o", queryRewriter = MyQueryReWriter.class)
     List<Orders> getAllOrders(Sort sort);
+	
+	@Query(value = "Select o from Orders o", queryRewriter = PagedQueryRewriter.class)
+	Page<Orders> getAllOrdersByPage(Pageable page);
+	
+	
 	
 	
 }
