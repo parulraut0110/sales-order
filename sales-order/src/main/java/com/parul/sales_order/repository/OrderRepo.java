@@ -6,6 +6,8 @@ import java.util.Date;
 
 import java.util.List;
 
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.OffsetScrollPosition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -98,9 +100,6 @@ public interface OrderRepo extends JpaRepository<Orders, Integer> {
 	
 	@Query(value = "Select o from Orders o", queryRewriter = PagedQueryRewriter.class)
 	Page<Orders> getAllOrdersByPage(Pageable page);
-	
-	
-	
 	
 }
 

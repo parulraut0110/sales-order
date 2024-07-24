@@ -13,6 +13,8 @@ import java.util.Date;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.OffsetScrollPosition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -222,8 +224,14 @@ public class MainController {
 
 		} while(getAllOrdersByPage.hasNext());  
 		System.out.println();
-
 		
+		
+		
+		System.out.println("List orders by example");
+		List<Orders> ordersByExample = orderService.ordersExample("Smart Watch");
+		for(Orders o : ordersByExample) 
+			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
+
 		
 	}
 }
