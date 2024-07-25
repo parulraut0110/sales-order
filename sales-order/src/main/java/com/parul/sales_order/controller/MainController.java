@@ -232,8 +232,32 @@ public class MainController {
 		for(Orders o : ordersByExample) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
 
-		
+		System.out.println();
+		System.out.println("List orders starts with by example");
+		List<Orders> ordersExample = orderService.ordersByExample("Smart");
+		for(Orders o : ordersExample) 
+			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
+		System.out.println();
+		/*
+		@GetMapping("/orders/example-price-range")
+	    public List<Orders> getOrdersByExampleAndPriceRange(@RequestParam String orderDetails,
+	                                                        @RequestParam double minPrice,
+	                                                        @RequestParam double maxPrice) {
+	        return orderService.findOrdersByExampleAndPriceRange(orderDetails, minPrice, maxPrice);
+	    }
+	    */
+		System.out.println("order list in price range");
+	    List<Orders> ordersByExampleInPriceRange = orderService.findOrdersByExampleAndPriceRange("Smart", 110.00F, 900.00F);
+	    for(Orders o : ordersByExampleInPriceRange) 
+			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
+
+	    System.out.println("\n\norder list for specific quantity");
+	    List<Orders> ordersByQuantityExample = orderService.ordersByQuantityExample(2);
+	    for(Orders o : ordersByQuantityExample) 
+			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
+
 	}
+	
 }
 
 
