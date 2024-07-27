@@ -256,6 +256,12 @@ public class MainController {
 	    for(Orders o : ordersByQuantityExample) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
 
+	    
+	    System.out.println("\n\norder list for specific order Date");
+	    List<Orders> ordersByDateExample = orderService.ordersByDateExample("Aug 2024");
+	    for(Orders o : ordersByDateExample) 
+			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
+
 	}
 	
 }

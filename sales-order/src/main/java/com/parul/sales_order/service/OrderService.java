@@ -1,9 +1,11 @@
 package com.parul.sales_order.service;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -88,10 +90,27 @@ public class OrderService {
 		ExampleMatcher matcher = ExampleMatcher.matching()
 											   .withIgnoreNullValues()
 											   .withIgnorePaths("orderId", "orderDetails", "unitPrice", "orderDate")
-											   .withMatcher("quantity", new ExampleMatcher.GenericPropertyMatcher().exact());
+											   .withMatcher("quantity", new ExampleMatcher.GenericPropertyMatcher().exact());   //matching for exact value of integer the only method integer matching
 		
 		Example<Orders> orderExample = Example.of(orderProbe, matcher);
 		
+		return orderRepo.findAll(orderExample);
+	}
+	
+	public List<Orders> ordersByDateExample(String regexDate) {
+		Orders orderProbe = new Orders();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("\\d\\{1,2\\}\\s[A-Za-z]\\{3\\}\\s2024");
+		ExampleMatcher matcher = ExampleMatcher.matching() 
+											   .withIgnoreNullValues()
+											   .withIgnorePaths("orderId", "orderDetails", "unitPrice", "quantity")
+											   .withTransformer("orderDate", value -> {              //converting temporal date into string for regex matching
+												   if(value.isPresent() && value.get() != null)
+													   return Optional.of( ( (LocalDate) value.get() ).format(formatter) );
+												   else
+													   return Optional.of(value);
+											   })
+											   .withMatcher("orderDate", exampleMatcher -> exampleMatcher.regex());
+		Example<Orders> orderExample = Example.of(orderProbe, matcher);
 		return orderRepo.findAll(orderExample);
 	}
 }
