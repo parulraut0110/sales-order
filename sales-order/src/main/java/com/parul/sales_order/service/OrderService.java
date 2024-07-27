@@ -1,6 +1,7 @@
 package com.parul.sales_order.service;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -86,31 +87,29 @@ public class OrderService {
 	public List<Orders> ordersByQuantityExample(int quantity) {
 		Orders orderProbe = new Orders();
 		orderProbe.setQuantity(quantity);
-		
+
 		ExampleMatcher matcher = ExampleMatcher.matching()
-											   .withIgnoreNullValues()
-											   .withIgnorePaths("orderId", "orderDetails", "unitPrice", "orderDate")
-											   .withMatcher("quantity", new ExampleMatcher.GenericPropertyMatcher().exact());   //matching for exact value of integer the only method integer matching
-		
+				.withIgnoreNullValues()
+				.withIgnorePaths("orderId", "orderDetails", "unitPrice", "orderDate")
+				.withMatcher("quantity", new ExampleMatcher.GenericPropertyMatcher().exact());   //matching for exact value of integer the only method integer matching
+
 		Example<Orders> orderExample = Example.of(orderProbe, matcher);
-		
+
 		return orderRepo.findAll(orderExample);
 	}
-	
-	public List<Orders> ordersByDateExample(String regexDate) {
+
+
+
+
+	public List<Orders> ordersByDetailsExample(String regexDetails) {
 		Orders orderProbe = new Orders();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("\\d\\{1,2\\}\\s[A-Za-z]\\{3\\}\\s2024");
+		orderProbe.setOrderDetails(regexDetails);
 		ExampleMatcher matcher = ExampleMatcher.matching() 
 											   .withIgnoreNullValues()
-											   .withIgnorePaths("orderId", "orderDetails", "unitPrice", "quantity")
-											   .withTransformer("orderDate", value -> {              //converting temporal date into string for regex matching
-												   if(value.isPresent() && value.get() != null)
-													   return Optional.of( ( (LocalDate) value.get() ).format(formatter) );
-												   else
-													   return Optional.of(value);
-											   })
-											   .withMatcher("orderDate", exampleMatcher -> exampleMatcher.regex());
+											   .withIgnorePaths("orderId", "orderDate", "unitPrice", "quantity")
+											   .withStringMatcher(ExampleMatcher.StringMatcher.REGEX);
 		Example<Orders> orderExample = Example.of(orderProbe, matcher);
 		return orderRepo.findAll(orderExample);
 	}
+
 }

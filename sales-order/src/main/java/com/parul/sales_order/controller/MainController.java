@@ -210,8 +210,8 @@ public class MainController {
 
 		System.out.println();
 
-		
-		
+
+
 		pageNo = 0;
 		Page<Orders> getAllOrdersByPage;
 		do {
@@ -224,9 +224,9 @@ public class MainController {
 
 		} while(getAllOrdersByPage.hasNext());  
 		System.out.println();
-		
-		
-		
+
+
+
 		System.out.println("List orders by example");
 		List<Orders> ordersByExample = orderService.ordersExample("Smart Watch");
 		for(Orders o : ordersByExample) 
@@ -245,25 +245,25 @@ public class MainController {
 	                                                        @RequestParam double maxPrice) {
 	        return orderService.findOrdersByExampleAndPriceRange(orderDetails, minPrice, maxPrice);
 	    }
-	    */
+		 */
 		System.out.println("order list in price range");
-	    List<Orders> ordersByExampleInPriceRange = orderService.findOrdersByExampleAndPriceRange("Smart", 110.00F, 900.00F);
-	    for(Orders o : ordersByExampleInPriceRange) 
+		List<Orders> ordersByExampleInPriceRange = orderService.findOrdersByExampleAndPriceRange("Smart", 110.00F, 900.00F);
+		for(Orders o : ordersByExampleInPriceRange) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
 
-	    System.out.println("\n\norder list for specific quantity");
-	    List<Orders> ordersByQuantityExample = orderService.ordersByQuantityExample(2);
-	    for(Orders o : ordersByQuantityExample) 
+		System.out.println("\n\norder list for specific quantity");
+		List<Orders> ordersByQuantityExample = orderService.ordersByQuantityExample(2);
+		for(Orders o : ordersByQuantityExample) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
 
-	    
-	    System.out.println("\n\norder list for specific order Date");
-	    List<Orders> ordersByDateExample = orderService.ordersByDateExample("Aug 2024");
-	    for(Orders o : ordersByDateExample) 
-			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
 
+		System.out.println("\n\nOrder list for specific order date:");
+		List<Orders> ordersByDateExample = orderService.ordersByDetailsExample("Smart *");
+		for (Orders o : ordersByDateExample) {
+		    System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());
+		}
 	}
-	
+
 }
 
 
