@@ -100,7 +100,7 @@ public class OrderService {
 
 
 
-
+	/*
 	public List<Orders> ordersByDetailsExample(String regexDetails) {
 		Orders orderProbe = new Orders();
 		orderProbe.setOrderDetails(regexDetails);
@@ -111,5 +111,5 @@ public class OrderService {
 		Example<Orders> orderExample = Example.of(orderProbe, matcher);
 		return orderRepo.findAll(orderExample);
 	}
-
+	*/
 }

@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.parul.sales_order.datasoure.config.ClassConfigTest;
 import com.parul.sales_order.entity.Orders;
+import com.parul.sales_order.repository.JDBCTemplateOrderRepo;
 import com.parul.sales_order.repository.OrderRepo;
 import com.parul.sales_order.service.OrderService;
 import com.parul.sales_order.service.TestService;
@@ -52,6 +55,9 @@ public class MainController {
 
 	@Autowired
 	OrderRepo repo;
+	
+	@Autowired
+	JDBCTemplateOrderRepo jdbcTemplateRepo;
 
 	@Transactional
 	@GetMapping("/getItemName/{orderId}")
@@ -256,12 +262,43 @@ public class MainController {
 		for(Orders o : ordersByQuantityExample) 
 			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
 
-
+		/*
 		System.out.println("\n\nOrder list for specific order date:");
 		List<Orders> ordersByDateExample = orderService.ordersByDetailsExample("Smart *");
 		for (Orders o : ordersByDateExample) {
 		    System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());
 		}
+		*/
+		
+		//jdbcTemplateRepo.performInserts();
+		
+		List<Orders> insertArgs = new ArrayList<>();
+		Orders order = new Orders();
+		order.setOrderDetails("Office Bag");
+		order.setQuantity(2);
+		order.setUnitPrice(1200.00F);
+		order.setOrderDate(new Date());
+		insertArgs.add(order);
+		
+		order = new Orders();
+		order.setOrderDetails("shopping Bag");
+		order.setQuantity(3);
+		order.setUnitPrice(800.00F);
+		order.setOrderDate(new Date());
+		insertArgs.add(order);
+		
+		order = new Orders();
+		order.setOrderDetails("Sports Bag");
+		order.setQuantity(2);
+		order.setUnitPrice(1900.00F);
+		order.setOrderDate(new Date());
+		insertArgs.add(order);
+		
+		//jdbcTemplateRepo.performInsertsByArgs(insertArgs);
+		
+		jdbcTemplateRepo.performBatchInsertByArgs(insertArgs);
+
+
 	}
 
 }
