@@ -294,10 +294,40 @@ public class MainController {
 		order.setOrderDate(new Date());
 		insertArgs.add(order);
 		
-		//jdbcTemplateRepo.performInsertsByArgs(insertArgs);
+		int[][] updateStats = jdbcTemplateRepo.performInsertsByArgs(insertArgs);
+		for(int i = 0; i < updateStats.length; i++) 
+			for(int j = 0; j < updateStats[i].length; j++) 
+				System.out.printf("\n[%d][%d] : %d", i, j, updateStats[i][j]);
+			
 		
-		jdbcTemplateRepo.performBatchInsertByArgs(insertArgs);
+		
+		//jdbcTemplateRepo.performBatchInsertByArgs(insertArgs);
+		
+		jdbcTemplateRepo.performBatchInsertByBatchSetter(insertArgs);
 
+		List<Orders> insertArgs1 = new ArrayList<>();
+		order = new Orders();
+		order.setOrderDetails("Head phone");
+		order.setQuantity(1);
+		order.setUnitPrice(200.00F);
+		order.setOrderDate(new Date());
+		insertArgs1.add(order);
+		
+		order = new Orders();
+		order.setOrderDetails("Ear Phone");
+		order.setQuantity(2);
+		order.setUnitPrice(100.00F);
+		order.setOrderDate(new Date());
+		insertArgs1.add(order);
+		
+		order = new Orders();
+		order.setOrderDetails("Mobile Phone");
+		order.setQuantity(1);
+		order.setUnitPrice(10900.00F);
+		order.setOrderDate(new Date());
+		insertArgs1.add(order);
+		
+		jdbcTemplateRepo.performBatchInsertByArgAndTypes(insertArgs1);
 
 	}
 
