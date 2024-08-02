@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -14,6 +16,9 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.stereotype.Repository;
 
 import com.parul.sales_order.entity.Orders;
+
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 @Repository
 public class JDBCTemplateOrderRepo {
@@ -119,24 +124,47 @@ public class JDBCTemplateOrderRepo {
 
 		jdbcTemplate.batchUpdate(insertSql, args, argTypes); 			
 	}
-	
-//batchUpdate(PreparedStatementCreator psc, BatchPreparedStatementSetter pss, KeyHolder generatedKeyHolder)
-	
+
+	//batchUpdate(PreparedStatementCreator psc, BatchPreparedStatementSetter pss, KeyHolder generatedKeyHolder)
+
 	public void performBatchInsertWithKey(List<Orders> batchArgs) throws SQLException {
-
-		List<Object[]> args = batchArgs.stream()
-				.map(o -> new Object[] { o.getOrderDetails(), o.getQuantity(), o.getUnitPrice(), o.getOrderDate() })
-				.toList();
-
 
 		PreparedStatementCreator psc = new PreparedStatementCreator() {
 
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-				return null;
+				PreparedStatement ps = con.prepareStatement("insert into Orders(Order_Details, Quantity, Price, Order_Date) values(?, ?, ?, ?)", new String[]{"Order_Id"});
+				return ps;
 			}
-			
+
+		};
+
+		BatchPreparedStatementSetter bpss = new BatchPreparedStatementSetter() {
+
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				ps.setString(1, batchArgs.get(i).getOrderDetails());
+				ps.setInt(2, batchArgs.get(i).getQuantity());
+				ps.setFloat(3, batchArgs.get(i).getUnitPrice());
+				ps.setDate(4, new java.sql.Date(new java.util.Date().getTime()));	
+			}
+
+			@Override
+			public int getBatchSize() {
+				return batchArgs.size();
+			}
 		};
 		
+		KeyHolder keyHolder = new GeneratedKeyHolder();	
+		
+		jdbcTemplate.batchUpdate(psc, bpss, keyHolder);
+		
+		List<Map<String, Object>> keyList = keyHolder.getKeyList();
+		
+		for(Map<String, Object> key : keyList) 
+			for(Map.Entry<String, Object> entry : key.entrySet()) 
+				System.out.println("Generated Key : " + entry.getKey() + " " + entry.getValue());
+			
 	}
+	
 }

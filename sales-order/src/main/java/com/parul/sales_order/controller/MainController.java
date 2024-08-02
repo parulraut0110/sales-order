@@ -2,8 +2,7 @@ package com.parul.sales_order.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-
-
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -61,7 +60,7 @@ public class MainController {
 
 	@Transactional
 	@GetMapping("/getItemName/{orderId}")
-	public void printOrderName(@PathVariable Integer orderId) throws ParseException {
+	public void printOrderName(@PathVariable Integer orderId) throws ParseException, SQLException {
 
 		//System.out.println("The order name is : " + orderService.getItemName(orderId));
 		System.out.println("The order id is : " + orderId);
@@ -303,7 +302,7 @@ public class MainController {
 		
 		//jdbcTemplateRepo.performBatchInsertByArgs(insertArgs);
 		
-		jdbcTemplateRepo.performBatchInsertByBatchSetter(insertArgs);
+		//jdbcTemplateRepo.performBatchInsertByBatchSetter(insertArgs);
 
 		List<Orders> insertArgs1 = new ArrayList<>();
 		order = new Orders();
@@ -321,13 +320,15 @@ public class MainController {
 		insertArgs1.add(order);
 		
 		order = new Orders();
-		order.setOrderDetails("Mobile Phone");
+		order.setOrderDetails("Cordless Phone");
 		order.setQuantity(1);
 		order.setUnitPrice(10900.00F);
 		order.setOrderDate(new Date());
 		insertArgs1.add(order);
 		
-		jdbcTemplateRepo.performBatchInsertByArgAndTypes(insertArgs1);
+		//jdbcTemplateRepo.performBatchInsertByArgAndTypes(insertArgs1);
+		
+		jdbcTemplateRepo.performBatchInsertWithKey(insertArgs1);
 
 	}
 
