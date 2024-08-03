@@ -1,5 +1,6 @@
 package com.parul.sales_order.repository;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.CallableStatementCreator;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.stereotype.Repository;
@@ -165,6 +167,19 @@ public class JDBCTemplateOrderRepo {
 			for(Map.Entry<String, Object> entry : key.entrySet()) 
 				System.out.println("Generated Key : " + entry.getKey() + " " + entry.getValue());
 			
+	}
+	
+//public Map<String,Object> call(CallableStatementCreator csc, List<SqlParameter> declaredParameters)	
+	
+	public List<Orders> getOrdersAboveByCallable(float price) {
+		CallableStatementCreator csc = new CallableStatementCreator() {
+
+			@Override
+			public CallableStatement createCallableStatement(Connection con) throws SQLException {
+				CallableStatement cs = con.prepareCall("call");
+				return null;
+			}};
+		
 	}
 	
 }
