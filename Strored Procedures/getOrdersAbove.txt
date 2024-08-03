@@ -1,0 +1,13 @@
+USE `testapplication`;
+DROP procedure IF EXISTS `testapplication`.`getOrdersAbove`;
+;
+
+DELIMITER $$
+USE `testapplication`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getOrdersAbove`(IN price Float)
+BEGIN 
+	select * from Orders o where o.Price > price;
+END$$
+
+DELIMITER ;
+;
