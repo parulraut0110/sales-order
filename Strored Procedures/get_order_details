@@ -1,0 +1,14 @@
+USE `testapplication`;
+DROP procedure IF EXISTS `get_order_details`;
+
+USE `testapplication`;
+DROP procedure IF EXISTS `testapplication`.`get_order_details`;
+;
+
+DELIMITER $$
+USE `testapplication`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_order_details`(IN orderId INT)          
+SELECT * FROM Orders WHERE Order_ID = orderId$$
+
+DELIMITER ;
+;
