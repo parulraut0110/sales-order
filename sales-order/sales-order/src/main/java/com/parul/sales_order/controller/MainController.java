@@ -94,7 +94,7 @@ public class MainController {
 		System.out.println();
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Date startDate = sdf.parse("2024-08-13");               //create a 'Data' object corresponding to string input provided
+		Date startDate = sdf.parse("2024-08-13");               //create a 'Date' object corresponding to string input provided
 		Date endDate = sdf.parse("2024-08-17");
 
 		List<Orders> orderListByOrderDate = repo.findByOrderDateBetween(startDate, endDate);
@@ -376,7 +376,13 @@ public class MainController {
 		jdbcTemplateRepo.executeSqlStatement();
 		*/		
 		
-		
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate1 = dateFormatter.parse("2024-07-31");
+		Date endDate1 = dateFormatter.parse("2024-08-08");
+
+		System.out.println("\nOrders between \n");
+		List<Map<String, Object>> ordersBetween = jdbcTemplateRepo.getOrdersByPriceAndInDateBetween(2000.00F, startDate1, endDate1);
+		ordersBetween.forEach(m -> System.out.println("OrderDetails : " + (String)m.get("OrderDetails") + " Price : " + (float)m.get("Price")));
 	}
 	
 }

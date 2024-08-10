@@ -323,7 +323,7 @@ public class JDBCTemplateOrderRepo {
 	
 	
 	
-	public List<Map<String, Object>> getOrdersByPriceAndInDateBetween(float price, java.sql.Date startDate, java.sql.Date endDate) {
+	public List<Map<String, Object>> getOrdersByPriceAndInDateBetween(float price, java.util.Date startDate, java.util.Date endDate) {
 	    String callString = "{call getOrdersByPriceAndInDateBetween(?, ?, ?)}";
 	    
 	    CallableStatementCallback<List<Map<String, Object>>> callback = new CallableStatementCallback<List<Map<String, Object>>>() {
@@ -333,7 +333,6 @@ public class JDBCTemplateOrderRepo {
 	            cs.setFloat(1, price);
 	            cs.setDate(2, new java.sql.Date(startDate.getTime()));
 	            cs.setDate(3, new java.sql.Date(endDate.getTime()));
-	            
 	            cs.execute();
 	            ResultSet rs = cs.getResultSet();
 	            List<Map<String, Object>> list = new ArrayList<>();
@@ -348,10 +347,8 @@ public class JDBCTemplateOrderRepo {
 	            return list;
 	        }
 	    };
-
 	    return jdbcTemplate.execute(callString, callback);
 	}
-
 	
 	
 	public void executeSqlStatement() {
@@ -360,6 +357,8 @@ public class JDBCTemplateOrderRepo {
 		String sql = "insert into Orders(Order_Details, Quantity, Price, Order_Date) values('Goggles', 4, 120.00, '2024-07-14')";
 		jdbcTemplate.execute(sql);
 	}
+	
+	
 	
 
 }
