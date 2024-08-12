@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.ScrollPosition;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Window;
+import org.springframework.format.datetime.DateFormatter;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.parul.sales_order.datasoure.config.ClassConfigTest;
@@ -54,7 +56,7 @@ public class MainController {
 
 	@Autowired
 	OrderRepo repo;
-	
+
 	@Autowired
 	JDBCTemplateOrderRepo jdbcTemplateRepo;
 
@@ -92,7 +94,7 @@ public class MainController {
 		System.out.println();
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Date startDate = sdf.parse("2024-08-13");               //create a 'Data' object corresponding to string input provided
+		Date startDate = sdf.parse("2024-08-13");               //create a 'Date' object corresponding to string input provided
 		Date endDate = sdf.parse("2024-08-17");
 
 		List<Orders> orderListByOrderDate = repo.findByOrderDateBetween(startDate, endDate);
@@ -267,10 +269,10 @@ public class MainController {
 		for (Orders o : ordersByDateExample) {
 		    System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());
 		}
-		*/
-		
+		 */
+
 		//jdbcTemplateRepo.performInserts();
-		
+
 		List<Orders> insertArgs = new ArrayList<>();
 		Orders order = new Orders();
 		order.setOrderDetails("Office Bag");
@@ -278,30 +280,30 @@ public class MainController {
 		order.setUnitPrice(1200.00F);
 		order.setOrderDate(new Date());
 		insertArgs.add(order);
-		
+
 		order = new Orders();
 		order.setOrderDetails("shopping Bag");
 		order.setQuantity(3);
 		order.setUnitPrice(800.00F);
 		order.setOrderDate(new Date());
 		insertArgs.add(order);
-		
+
 		order = new Orders();
 		order.setOrderDetails("Sports Bag");
 		order.setQuantity(2);
 		order.setUnitPrice(1900.00F);
 		order.setOrderDate(new Date());
 		insertArgs.add(order);
-		
+
 		int[][] updateStats = jdbcTemplateRepo.performInsertsByArgs(insertArgs);
 		for(int i = 0; i < updateStats.length; i++) 
 			for(int j = 0; j < updateStats[i].length; j++) 
 				System.out.printf("\n[%d][%d] : %d", i, j, updateStats[i][j]);
-			
-		
-		
+
+
+
 		//jdbcTemplateRepo.performBatchInsertByArgs(insertArgs);
-		
+
 		//jdbcTemplateRepo.performBatchInsertByBatchSetter(insertArgs);
 
 		List<Orders> insertArgs1 = new ArrayList<>();
@@ -311,27 +313,95 @@ public class MainController {
 		order.setUnitPrice(200.00F);
 		order.setOrderDate(new Date());
 		insertArgs1.add(order);
-		
+
 		order = new Orders();
 		order.setOrderDetails("Ear Phone");
 		order.setQuantity(2);
 		order.setUnitPrice(100.00F);
 		order.setOrderDate(new Date());
 		insertArgs1.add(order);
-		
+
 		order = new Orders();
 		order.setOrderDetails("Cordless Phone");
 		order.setQuantity(1);
 		order.setUnitPrice(10900.00F);
 		order.setOrderDate(new Date());
 		insertArgs1.add(order);
-		
+
 		//jdbcTemplateRepo.performBatchInsertByArgAndTypes(insertArgs1);
+
+
+		//jdbcTemplateRepo.performBatchInsertWithKey(insertArgs1);
+
+
+		List<Orders> orderList = jdbcTemplateRepo.getOrdersAboveByCallable(500.00F);
+		System.out.println("\n\norder list for Orders Above ");
+		for(Orders o : orderList) 
+			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
+
+		List<Orders> getOrdersAboveByCallable = jdbcTemplateRepo.getOrdersAboveByCallable(150.00F);
+		System.out.println("\n\norder list for Orders Above ");
+		for(Orders o : getOrdersAboveByCallable) 
+			System.out.println(o.getOrderId() + " " + o.getOrderDetails() + " " + o.getQuantity() + " " + o.getOrderDate().toGMTString());	
+
+		List<Map<String, Object>> getOrdersAboveByCallableUsingSqlResultSet = jdbcTemplateRepo.getOrdersAboveByCallableUsingSqlResultSet(750.00F);
+		System.out.println("\n\norder list for Orders Above:");
+
+		for (Map<String, Object> order1 : getOrdersAboveByCallableUsingSqlResultSet) {
+			System.out.println(
+					"Order ID: " + order1.get("orderid") + ", " +
+							"Order Details: " + order1.get("orderdetails") + ", " +
+							"Quantity: " + order1.get("quantity") + ", " +
+							"Price: " + order1.get("price") + ", " +
+							"Order Date: " + order1.get("orderdate")
+					);
+		}
+
+		Map<String, Object> maxOrder = jdbcTemplateRepo.getMaxOrderPriceByCallableUsingResultSetExtractor(0.00F);
+		System.out.println("\n\norder Details of Max Order:");
+
+		System.out.println(
+				"Order ID: " + maxOrder.get("orderId") + ", " +
+						"Order Details: " + maxOrder.get("orderDetails") + ", " +
+						"Quantity: " + maxOrder.get("quantity") + ", " +
+						"Price: " + maxOrder.get("unitPrice") + ", " +
+						"Order Date: " + maxOrder.get("orderDate"));
+
+		System.out.println("\nQuery Update count");
+		int updateCount = jdbcTemplateRepo.updateOrdersByPriceAndGetUpdateCount(7700.00F, 10.00F);
+		System.out.println("Update Count : " + updateCount);
 		
-		jdbcTemplateRepo.performBatchInsertWithKey(insertArgs1);
+		/*
+		System.out.println("\nexecuteSqlStatement : ");
+		jdbcTemplateRepo.executeSqlStatement();
+		*/		
+		
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate1 = dateFormatter.parse("2024-07-31");
+		Date endDate1 = dateFormatter.parse("2024-08-08");
+
+		System.out.println("\nOrders between \n");
+		List<Map<String, Object>> ordersBetween = jdbcTemplateRepo.getOrdersByPriceAndInDateBetween(2000.00F, startDate1, endDate1);
+		ordersBetween.forEach(m -> System.out.println("OrderDetails : " + (String)m.get("OrderDetails") + " Price : " + (float)m.get("Price")));
+		
+		System.out.println("\nOrders Stats \n");
+		Map<String, Object> orderStats = jdbcTemplateRepo.getOrderStatsBetweenDates(startDate1, endDate1);
+		System.out.println("average order Price : " + orderStats.get("avrg") + " minimum count price : " + orderStats.get("minPrice") + " count of orders : " + orderStats.get("orderCount"));
+		
+		
+		Date startDate2 = dateFormatter.parse("2024-07-04");
+		Date endDate2 = dateFormatter.parse("2024-07-06");
+		
+		
+		System.out.println("\n\norder Stats by procedure:");
+		Map<String, Object> orderStats2 = jdbcTemplateRepo.getOrderStatsBetweenDatesUsingCallable(startDate2, endDate2);
+		System.out.println("average order Price : " + orderStats2.get("avrg") + " minimum count price : " + orderStats2.get("minPrice") + " count of orders : " + orderStats2.get("orderCount"));
+
+		
 
 	}
-
+	
 }
+
 
 
