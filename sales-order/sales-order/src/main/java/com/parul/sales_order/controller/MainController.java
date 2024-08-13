@@ -383,6 +383,26 @@ public class MainController {
 		System.out.println("\nOrders between \n");
 		List<Map<String, Object>> ordersBetween = jdbcTemplateRepo.getOrdersByPriceAndInDateBetween(2000.00F, startDate1, endDate1);
 		ordersBetween.forEach(m -> System.out.println("OrderDetails : " + (String)m.get("OrderDetails") + " Price : " + (float)m.get("Price")));
+		
+		System.out.println("\nOrders Stats \n");
+		Map<String, Object> orderStats = jdbcTemplateRepo.getOrderStatsBetweenDates(startDate1, endDate1);
+		System.out.println("average order Price : " + orderStats.get("avrg") + " minimum count price : " + orderStats.get("minPrice") + " count of orders : " + orderStats.get("orderCount"));
+		
+		
+		Date startDate2 = dateFormatter.parse("2024-07-04");
+		Date endDate2 = dateFormatter.parse("2024-07-06");
+		
+		
+		System.out.println("\n\norder Stats by procedure:");
+		Map<String, Object> orderStats2 = jdbcTemplateRepo.getOrderStatsBetweenDatesUsingCallable(startDate2, endDate2);
+		System.out.println("average order Price : " + orderStats2.get("avrg") + " minimum count price : " + orderStats2.get("minPrice") + " count of orders : " + orderStats2.get("orderCount"));
+
+		Date date = dateFormatter.parse("2024-08-01");
+		
+		System.out.println("\n\ntotal orders on Date\n");
+		Map<Date, Float> totalOrder = jdbcTemplateRepo.totalOrdersOnDate(date);
+		System.out.println("Total Order on " + date.toString() + " : " + totalOrder.get(date));
+
 	}
 	
 }
