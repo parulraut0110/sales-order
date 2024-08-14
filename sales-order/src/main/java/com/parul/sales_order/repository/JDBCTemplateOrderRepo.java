@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.CallableStatementCreator;
+import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -424,8 +426,75 @@ public class JDBCTemplateOrderRepo {
 
 		return jdbcTemplate.execute(csc, callback);
 	}
+	
+// execute(ConnectionCallback<T> action)	
+	
+	public Map<Date, Float> totalOrdersOnDate(java.util.Date orderDate) {
+		java.sql.Date date = new java.sql.Date(orderDate.getTime());
+		String sql = "select SUM(temp.Price * temp.Quantity) as totalOrders, temp.Order_Date "
+				+ "from  (select Price, Quantity, Order_Date from Orders where Order_Date = ?) as temp; ";
+		
+		Map<Date, Float> returnMap = new HashMap<>();
+		Map<Date, Float> orderMap = jdbcTemplate.execute(new ConnectionCallback<Map<Date, Float>>(){
 
+			@Override
+			public Map<Date, Float> doInConnection(Connection con) throws SQLException, DataAccessException {
+				//Statement stmt = con.createStatement();
+				PreparedStatement ps = con.prepareStatement(sql);
+				ps.setDate(1, date);
+				ps.execute();
+				ResultSet rs = ps.executeQuery();
+				float totalOrders = 0;
+				while(rs.next())                    //rs.next() is required to iterate the resultSet to obtain the result value else it will print error 'before begin'
+					totalOrders = rs.getFloat(1);
+				
+				returnMap.put(date, totalOrders);
+				return returnMap; 
+			}});
+		return returnMap;
+	}
 
+//execute(PreparedStatementCreator psc, PreparedStatementCallback<T> action)
+	
+	public Map<Date, Float> getMaxOrderBetweenDate(java.util.Date startDate, java.util.Date endDate) {
+		String sql = "SELECT ordersByDate.Order_Date AS orderDate, MAX(ordersByDate.totalOrder) AS maxOrders "
+				+ "FROM ( "
+				+ "    SELECT Order_Date, SUM(Price * Quantity) AS totalOrder "
+				+ "    FROM Orders "
+				+ "    WHERE Order_Date BETWEEN ? AND ? "
+				+ "    GROUP BY Order_Date "
+				+ ") AS ordersByDate "
+				+ "GROUP BY ordersByDate.Order_Date "
+				+ "ORDER BY maxOrders DESC "
+				+ "LIMIT 1";
+		Map<Date, Float> returnMap = new HashMap<>();
+		PreparedStatementCreator psc = new PreparedStatementCreator() {
+
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement ps = con.prepareStatement(sql);
+				ps.setDate(1, new java.sql.Date(startDate.getTime()));
+				ps.setDate(2, new java.sql.Date(endDate.getTime()));
+
+				return ps;
+			}
+			
+		};
+		
+		PreparedStatementCallback<Map<Date, Float>> callback = new PreparedStatementCallback<>() {
+
+			@Override
+			public Map<Date, Float> doInPreparedStatement(PreparedStatement ps)
+					throws SQLException, DataAccessException {
+				ps.execute();
+				ResultSet rs = ps.getResultSet();
+				while(rs.next())
+					returnMap.put(rs.getDate(1), rs.getFloat(2));
+				
+				return returnMap;
+			}};
+		return jdbcTemplate.execute(psc, callback);	
+	}
 }
 
 

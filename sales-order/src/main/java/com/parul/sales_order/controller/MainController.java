@@ -397,8 +397,19 @@ public class MainController {
 		Map<String, Object> orderStats2 = jdbcTemplateRepo.getOrderStatsBetweenDatesUsingCallable(startDate2, endDate2);
 		System.out.println("average order Price : " + orderStats2.get("avrg") + " minimum count price : " + orderStats2.get("minPrice") + " count of orders : " + orderStats2.get("orderCount"));
 
+		Date date = dateFormatter.parse("2024-08-01");
 		
+		System.out.println("\n\ntotal orders on Date\n");
+		Map<Date, Float> totalOrder = jdbcTemplateRepo.totalOrdersOnDate(date);
+		System.out.println("Total Order on " + date.toString() + " : " + totalOrder.get(date));
 
+		Date startDate3 = dateFormatter.parse("2024-07-01");
+		Date endDate3 = dateFormatter.parse("2024-07-02");
+		
+		System.out.println("Max Order Between Dates ");
+		Map<Date, Float> MaxOrderBetweenDate = jdbcTemplateRepo.getMaxOrderBetweenDate(startDate3, endDate3);
+		for(Map.Entry<Date, Float>  entry : MaxOrderBetweenDate.entrySet())
+			System.out.println(entry.getKey() + " " + entry.getValue());
 	}
 	
 }
