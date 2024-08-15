@@ -29,6 +29,7 @@ import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.SqlReturnResultSet;
 import org.springframework.jdbc.core.SqlReturnUpdateCount;
+import org.springframework.jdbc.core.StatementCallback;
 import org.springframework.stereotype.Repository;
 
 import org.springframework.jdbc.core.CallableStatementCallback; 
@@ -495,6 +496,41 @@ public class JDBCTemplateOrderRepo {
 			}};
 		return jdbcTemplate.execute(psc, callback);	
 	}
+	
+//execute(StatementCallback<T> action)	
+	
+	public List<Map<String, Object>> selectMaxOrderForEachDate() {
+		String sql = "SELECT o.Order_Date, o.Price * o.Quantity AS max, o.Order_ID, o.Order_Details "
+				+ "FROM Orders o "
+				+ "JOIN ( "
+				+ "    SELECT Order_Date, MAX(Price * Quantity) AS max_order "
+				+ "    FROM Orders "
+				+ "    GROUP BY Order_Date "
+				+ ") maxOrders ON o.Order_Date = maxOrders.Order_Date AND o.Price * o.Quantity = maxOrders.max_order "
+				+ "ORDER BY o.Order_Date; ";
+		
+		List<Map<String, Object>> returnList = new ArrayList<>();
+		
+		StatementCallback<List<Map<String, Object>>> stmtCallback = new StatementCallback<>() {
+			
+			@Override
+			public List<Map<String, Object>> doInStatement(Statement stmt) throws SQLException, DataAccessException {
+				stmt.executeQuery(sql);
+				ResultSet rs = stmt.getResultSet();
+				while(rs.next()) {
+					Map<String, Object> row = new HashMap<>();
+					row.put("orderDate", rs.getDate(1));
+					row.put("max", rs.getFloat(2));
+					row.put("orderId", rs.getInt(3));
+					row.put("orderDetails", rs.getString(4));					
+					
+					returnList.add(row);
+				}
+				return returnList;
+			}};
+		return jdbcTemplate.execute(stmtCallback);
+	}
+	
 }
 
 

@@ -410,6 +410,17 @@ public class MainController {
 		Map<Date, Float> MaxOrderBetweenDate = jdbcTemplateRepo.getMaxOrderBetweenDate(startDate3, endDate3);
 		for(Map.Entry<Date, Float>  entry : MaxOrderBetweenDate.entrySet())
 			System.out.println(entry.getKey() + " " + entry.getValue());
+		
+		System.out.println("\nMax Order on Each Day\n");
+		List<Map<String, Object>> maxOrderForEachDate = jdbcTemplateRepo.selectMaxOrderForEachDate();
+		for (Map<String, Object> order1 : maxOrderForEachDate) {
+			System.out.println(
+					"Order ID: " + order1.get("orderId") + ", " +
+							"Order Details: " + order1.get("orderDetails") + ", " +
+							"Order amount: " + order1.get("max") + ", " +
+							"Order Date: " + order1.get("orderDate")
+					);
+		}
 	}
 	
 }
