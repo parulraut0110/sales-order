@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -24,11 +26,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.SqlReturnResultSet;
 import org.springframework.jdbc.core.SqlReturnUpdateCount;
+import org.springframework.jdbc.core.StatementCallback;
 import org.springframework.stereotype.Repository;
 
 import org.springframework.jdbc.core.CallableStatementCallback; 
@@ -409,31 +413,31 @@ public class JDBCTemplateOrderRepo {
 				return cs;
 			}};
 
-		CallableStatementCallback<Map<String, Object>> callback = new CallableStatementCallback<>() {
+			CallableStatementCallback<Map<String, Object>> callback = new CallableStatementCallback<>() {
 
-			@Override
-			public Map<String, Object> doInCallableStatement(CallableStatement cs) throws SQLException, DataAccessException {
-				cs.execute();
+				@Override
+				public Map<String, Object> doInCallableStatement(CallableStatement cs) throws SQLException, DataAccessException {
+					cs.execute();
 
-				Map<String, Object> map = new HashMap<>();
-				map.put("avrg", cs.getFloat("avrg"));
-				map.put("minPrice", cs.getFloat(4));
-				map.put("orderCount", cs.getInt(5));
-				
-				return map;
-			}
-		};
+					Map<String, Object> map = new HashMap<>();
+					map.put("avrg", cs.getFloat("avrg"));
+					map.put("minPrice", cs.getFloat(4));
+					map.put("orderCount", cs.getInt(5));
 
-		return jdbcTemplate.execute(csc, callback);
+					return map;
+				}
+			};
+
+			return jdbcTemplate.execute(csc, callback);
 	}
-	
-// execute(ConnectionCallback<T> action)	
-	
+
+	// execute(ConnectionCallback<T> action)	
+
 	public Map<Date, Float> totalOrdersOnDate(java.util.Date orderDate) {
 		java.sql.Date date = new java.sql.Date(orderDate.getTime());
 		String sql = "select SUM(temp.Price * temp.Quantity) as totalOrders, temp.Order_Date "
 				+ "from  (select Price, Quantity, Order_Date from Orders where Order_Date = ?) as temp; ";
-		
+
 		Map<Date, Float> returnMap = new HashMap<>();
 		Map<Date, Float> orderMap = jdbcTemplate.execute(new ConnectionCallback<Map<Date, Float>>(){
 
@@ -447,13 +451,156 @@ public class JDBCTemplateOrderRepo {
 				float totalOrders = 0;
 				while(rs.next())                    //rs.next() is required to iterate the resultSet to obtain the result value else it will print error 'before begin'
 					totalOrders = rs.getFloat(1);
-				
+
 				returnMap.put(date, totalOrders);
 				return returnMap; 
 			}});
 		return returnMap;
 	}
 
+	//execute(PreparedStatementCreator psc, PreparedStatementCallback<T> action)
+
+	public Map<Date, Float> getMaxOrderBetweenDate(java.util.Date startDate, java.util.Date endDate) {
+		String sql = "SELECT ordersByDate.Order_Date AS orderDate, MAX(ordersByDate.totalOrder) AS maxOrders "
+				+ "FROM ( "
+				+ "    SELECT Order_Date, SUM(Price * Quantity) AS totalOrder "
+				+ "    FROM Orders "
+				+ "    WHERE Order_Date BETWEEN ? AND ? "
+				+ "    GROUP BY Order_Date "
+				+ ") AS ordersByDate "
+				+ "GROUP BY ordersByDate.Order_Date "
+				+ "ORDER BY maxOrders DESC "
+				+ "LIMIT 1";
+		Map<Date, Float> returnMap = new HashMap<>();
+		PreparedStatementCreator psc = new PreparedStatementCreator() {
+
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement ps = con.prepareStatement(sql);
+				ps.setDate(1, new java.sql.Date(startDate.getTime()));
+				ps.setDate(2, new java.sql.Date(endDate.getTime()));
+
+				return ps;
+			}
+
+		};
+
+		PreparedStatementCallback<Map<Date, Float>> callback = new PreparedStatementCallback<>() {
+
+			@Override
+			public Map<Date, Float> doInPreparedStatement(PreparedStatement ps)
+					throws SQLException, DataAccessException {
+				ps.execute();
+				ResultSet rs = ps.getResultSet();
+				while(rs.next())
+					returnMap.put(rs.getDate(1), rs.getFloat(2));
+
+				return returnMap;
+			}};
+			return jdbcTemplate.execute(psc, callback);	
+	}
+
+	//execute(StatementCallback<T> action)	
+
+	public List<Map<String, Object>> selectMaxOrderForEachDate() {
+		String sql = "SELECT o.Order_Date, o.Price * o.Quantity AS max, o.Order_ID, o.Order_Details "
+				+ "FROM Orders o "
+				+ "JOIN ( "
+				+ "    SELECT Order_Date, MAX(Price * Quantity) AS max_order "
+				+ "    FROM Orders "
+				+ "    GROUP BY Order_Date "
+				+ ") maxOrders ON o.Order_Date = maxOrders.Order_Date AND o.Price * o.Quantity = maxOrders.max_order "
+				+ "ORDER BY o.Order_Date; ";
+
+		List<Map<String, Object>> returnList = new ArrayList<>();
+
+		StatementCallback<List<Map<String, Object>>> stmtCallback = new StatementCallback<>() {
+
+			@Override
+			public List<Map<String, Object>> doInStatement(Statement stmt) throws SQLException, DataAccessException {
+				stmt.executeQuery(sql);
+				ResultSet rs = stmt.getResultSet();
+				while(rs.next()) {
+					Map<String, Object> row = new HashMap<>();
+					row.put("orderDate", rs.getDate(1));
+					row.put("max", rs.getFloat(2));
+					row.put("orderId", rs.getInt(3));
+					row.put("orderDetails", rs.getString(4));					
+
+					returnList.add(row);
+				}
+				return returnList;
+			}};
+			return jdbcTemplate.execute(stmtCallback);
+	}
+
+	//query(String sql, Object[] args, int[] argTypes, ResultSetExtractor<T> rse)	
+
+	public List<Map<String, Object>> getAboveAverageOrders() {
+		String sql = "with average_Order as ( "
+				+ "	select avg(Price * Quantity) as avgOrder "
+				+ "	from Orders "
+				+ ") "
+				+ "select Order_Id, Price, Quantity, Order_Details, Order_Date "
+				+ "from Orders, average_Order  "
+				+ "where Price * Quantity > avgOrder;";
+
+		ResultSetExtractor<List<Map<String, Object>>> result = new ResultSetExtractor<>() {
+			List<Map<String, Object>> rows = new ArrayList<>();
+
+			@Override
+			public List<Map<String, Object>> extractData(ResultSet rs) throws SQLException, DataAccessException {
+
+				while(rs.next()) {
+					Map<String, Object> row = new HashMap<>();
+					row.put("orderId", rs.getInt(1));
+					row.put("price", rs.getFloat(2));
+					row.put("quantity", rs.getInt(3));
+					row.put("orderDetails", rs.getString(4));
+					row.put("orderDate", rs.getDate(5));
+					rows.add(row);
+				}
+				return rows;
+			}};
+
+			return	jdbcTemplate.query(sql, null, null, result);
+	}
+
+	//query(String sql, Object[] args, int[] argTypes, RowCallbackHandler rch)	
+
+	public Map<String, Object> getProductSalesVolumeOnDate(java.util.Date date, String name) {
+		String sql = "select  Order_Date, Order_Details, Sum(Quantity) as Volume "
+				+ "from Orders "
+				+ "where Order_Details = ? and Order_Date = ? "
+				+ "group by Order_Date, Order_Details;";
+
+		Object[] args = {name, date};
+
+		int[] argTypes = {Types.VARCHAR, Types.DATE};
+
+		Map<String, Object> map = new HashMap<>();
+
+		RowCallbackHandler rch = new RowCallbackHandler() {
+			Map<String, Object> map = new HashMap<>();
+			@Override
+			public void processRow(ResultSet rs) throws SQLException {
+				
+				//System.out.println("\nreached: " + rs.getDate(1));
+				while(rs.next()) { 
+					map.put("orderDate", rs.getDate(1));
+					map.put("orderDetails", rs.getString(2));
+					map.put("orderVolume", rs.getInt(3));
+
+					System.out.println("\nVolume : " + rs.getInt(3));
+				}				
+			}
+		};
+
+
+		jdbcTemplate.query(sql, args, argTypes, rch);	
+
+		return	map;
+	}
 
 }
 
