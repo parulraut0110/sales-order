@@ -370,12 +370,12 @@ public class MainController {
 		System.out.println("\nQuery Update count");
 		int updateCount = jdbcTemplateRepo.updateOrdersByPriceAndGetUpdateCount(7700.00F, 10.00F);
 		System.out.println("Update Count : " + updateCount);
-		
+
 		/*
 		System.out.println("\nexecuteSqlStatement : ");
 		jdbcTemplateRepo.executeSqlStatement();
-		*/		
-		
+		 */		
+
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 		Date startDate1 = dateFormatter.parse("2024-07-31");
 		Date endDate1 = dateFormatter.parse("2024-08-08");
@@ -383,46 +383,65 @@ public class MainController {
 		System.out.println("\nOrders between \n");
 		List<Map<String, Object>> ordersBetween = jdbcTemplateRepo.getOrdersByPriceAndInDateBetween(2000.00F, startDate1, endDate1);
 		ordersBetween.forEach(m -> System.out.println("OrderDetails : " + (String)m.get("OrderDetails") + " Price : " + (float)m.get("Price")));
-		
+
 		System.out.println("\nOrders Stats \n");
 		Map<String, Object> orderStats = jdbcTemplateRepo.getOrderStatsBetweenDates(startDate1, endDate1);
 		System.out.println("average order Price : " + orderStats.get("avrg") + " minimum count price : " + orderStats.get("minPrice") + " count of orders : " + orderStats.get("orderCount"));
-		
-		
+
+
 		Date startDate2 = dateFormatter.parse("2024-07-04");
 		Date endDate2 = dateFormatter.parse("2024-07-06");
-		
-		
+
+
 		System.out.println("\n\norder Stats by procedure:");
 		Map<String, Object> orderStats2 = jdbcTemplateRepo.getOrderStatsBetweenDatesUsingCallable(startDate2, endDate2);
 		System.out.println("average order Price : " + orderStats2.get("avrg") + " minimum count price : " + orderStats2.get("minPrice") + " count of orders : " + orderStats2.get("orderCount"));
 
 		Date date = dateFormatter.parse("2024-08-01");
-		
+
 		System.out.println("\n\ntotal orders on Date\n");
 		Map<Date, Float> totalOrder = jdbcTemplateRepo.totalOrdersOnDate(date);
 		System.out.println("Total Order on " + date.toString() + " : " + totalOrder.get(date));
 
 		Date startDate3 = dateFormatter.parse("2024-07-01");
 		Date endDate3 = dateFormatter.parse("2024-07-02");
-		
+
 		System.out.println("Max Order Between Dates ");
 		Map<Date, Float> MaxOrderBetweenDate = jdbcTemplateRepo.getMaxOrderBetweenDate(startDate3, endDate3);
 		for(Map.Entry<Date, Float>  entry : MaxOrderBetweenDate.entrySet())
 			System.out.println(entry.getKey() + " " + entry.getValue());
-		
+
 		System.out.println("\nMax Order on Each Day\n");
 		List<Map<String, Object>> maxOrderForEachDate = jdbcTemplateRepo.selectMaxOrderForEachDate();
 		for (Map<String, Object> order1 : maxOrderForEachDate) {
 			System.out.println(
-					"Order ID: " + order1.get("orderId") + ", " +
+							"Order ID: " + order1.get("orderId") + ", " +
 							"Order Details: " + order1.get("orderDetails") + ", " +
 							"Order amount: " + order1.get("max") + ", " +
 							"Order Date: " + order1.get("orderDate")
 					);
 		}
+
+		System.out.println("\nOrders Above average\n");
+		List<Map<String, Object>> ordersAboveAverage = jdbcTemplateRepo.getAboveAverageOrders();
+		for (Map<String, Object> order1 : ordersAboveAverage) {
+			System.out.println(
+							"Order ID: " + order1.get("orderId") + ", " +
+							"Order Price: " + order1.get("price") + ", " +
+							"Order Quantity: " + order1.get("quantity") + ", " +
+							"Order Date: " + order1.get("orderDetails") + ", " + 
+							"Order Date: " + order1.get("orderDate")
+					);
+		}
+		
+		java.util.Date date1 = dateFormatter.parse("2024-08-02");
+		
+		System.out.println("\nOrder Volume on Date\n");
+		Map<String, Object> productSalesVolumeOnDate  = jdbcTemplateRepo.getProductSalesVolumeOnDate(date1, "Mobile Phone");
+		System.out.println("Order_Date : " + ((java.sql.Date)productSalesVolumeOnDate.get("orderDate")).toString()+ " Order_Details : " + (String)productSalesVolumeOnDate.get("orderDetails") + " Volume : " + (Integer)productSalesVolumeOnDate.get("orderVolume"));
+
 	}
-	
+
 }
 
 
