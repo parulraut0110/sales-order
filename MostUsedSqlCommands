@@ -1,0 +1,40 @@
+use testApplication;
+insert into orders(Order_Details, Quantity, Price, Order_Description, Order_Date) values("Note book", 12, 30.50, 'Hard bind silky cover with already provided common text for reference with King size 200 pages', '2024-09-09');
+insert into orders(Order_Details, Quantity, Price, Order_Description, Order_Date) values("Lipstick", 12, 30.50, 'Extra large size, highly pigmented, Red 2050 shade', '2024-09-09');
+insert into orders(Order_Details, Quantity, Price, Order_Description, Order_Date) values("Lipstick", 12, 30.50, 'Medium/Extra large size, highly pigmented, pink 2050 shade', '2024-09-09');
+
+
+create fulltext index full_text_search on Orders(Order_Description);
+create fulltext index full_text_search_in_details on Orders(Order_Details);
+select * from Orders where match(order_Description) against('+size, -king' in boolean mode); 
+select * from Orders where match(order_Description) against('Extra' with query expansion); 
+
+select * from Orders where match(order_Description, order_Details) against('+book' in boolean mode); 
+
+SHOW INDEX FROM Orders;
+create fulltext index full_text_combied on Orders(order_Description, order_Details) ; 
+SELECT * FROM Orders WHERE MATCH(Order_Description, Order_Details) AGAINST('cooker' IN BOOLEAN MODE);
+
+select * from Orders;
+
+ALTER TABLE Orders
+DROP INDEX full_text;
+
+
+-- in boolean mode with query expansion in natural language
+
+select * from Orders where price = 30.50;
+
+alter table orders add column order_descr text after order_date; 
+select * from Orders;
+
+SET SQL_SAFE_UPDATES = 0;
+
+update Orders set order_descr = order_description;
+
+SET SQL_SAFE_UPDATES = 1;
+
+alter table Orders drop column order_description;
+
+ALTER TABLE Orders
+CHANGE COLUMN order_descr order_description text;
