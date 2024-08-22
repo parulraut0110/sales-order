@@ -25,6 +25,7 @@ import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
@@ -595,10 +596,40 @@ public class JDBCTemplateOrderRepo {
 
 		return	map;
 	}
-	
 
 //query(String sql, PreparedStatementSetter pss, ResultSetExtractor<T> rse)	
+	
+	public List<Map<String, Object>> searchOrders(String keyword) {
 
+        String sql = "SELECT * FROM Orders WHERE MATCH(Order_Description, Order_Details) AGAINST(? in boolean mode);";
+
+        PreparedStatementSetter pss = new PreparedStatementSetter() {
+
+			@Override
+			public void setValues(PreparedStatement ps) throws SQLException {
+				ps.setString(1, keyword);
+			}};
+       
+		List<Map<String, Object>> rows = new ArrayList<>();
+		
+		ResultSetExtractor<List<Map<String, Object>>> rse = new ResultSetExtractor<>() {
+
+			@Override
+			public List<Map<String, Object>> extractData(ResultSet rs) throws SQLException, DataAccessException {
+				while(rs.next()) {
+					Map<String, Object> row = new HashMap<>();	
+					row.put("orderDate", rs.getDate(5));
+					row.put("orderDetails", rs.getString(2));
+					row.put("orderDescription", rs.getString(6));
+					rows.add(row);
+				}
+				return rows;
+			}};
+			
+		return jdbcTemplate.query(sql, pss, rse);			
+    }
+	
+	
 	
 }
 

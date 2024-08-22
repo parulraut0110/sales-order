@@ -1,6 +1,7 @@
 package com.parul.sales_order.entity;
 
 import java.io.Serializable;
+
 import java.util.Date;
 
 import com.parul.sales_order.dto.OrderDTO;

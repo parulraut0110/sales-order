@@ -439,7 +439,12 @@ public class MainController {
 		System.out.println("\nOrder Volume on Date\n");
 		Map<String, Object> productSalesVolumeOnDate  = jdbcTemplateRepo.getProductSalesVolumeOnDate(date1, "Mobile Phone");
 		System.out.println("Order_Date : " + ((java.sql.Date)productSalesVolumeOnDate.get("orderDate")).toString()+ " Order_Details : " + (String)productSalesVolumeOnDate.get("orderDetails") + " Volume : " + (Integer)productSalesVolumeOnDate.get("orderVolume"));
-
+		
+		
+		System.out.println("\nfull text search \n");
+		List<Map<String, Object>> searchOrders = jdbcTemplateRepo.searchOrders("cooker");
+		searchOrders.forEach(s -> System.out.println(" Details : " + s.get("orderDetails") + " Description : " + s.get("orderDescription")));
+		 
 	}
 
 }
