@@ -78,3 +78,62 @@ VALUES
 
 select * from Employees;
 
+
+drop table employee;
+
+DROP TABLE IF EXISTS Employee;
+
+CREATE TABLE Employee (
+    firstName VARCHAR(50),
+    lastname TEXT,
+    fullName VARCHAR(100) GENERATED ALWAYS AS (CONCAT(firstName, ' ', lastname)) STORED,
+    empId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    age INT,
+    email VARCHAR(20),
+    gender VARCHAR(1)
+) AUTO_INCREMENT = 1000;
+
+INSERT INTO Employee (firstName, lastname, age, email, gender)
+VALUES 
+    ('Amit', 'Sharma', 30, 'amit.sharma@example.com', 'M'),
+    ('Nina', 'Gupta', 25, 'nina.gupta@example.com', 'F'),
+    ('Ravi', 'Kumar', 28, 'ravi.kumar@example.com', 'M'),
+    ('Sonia', 'Mehta', 32, 'sonia.mehta@example.com', 'F'),
+    ('Raj', 'Singh', 27, 'raj.singh@example.com', 'M'),
+    ('Anita', 'Desai', 29, 'anita.desai@example.com', 'F'),
+    ('Vikram', 'Patel', 35, 'vikram.patel@example.com', 'M'),
+    ('Priya', 'Jain', 26, 'priya.jain@example.com', 'F');
+
+ALTER TABLE Employee
+MODIFY COLUMN email VARCHAR(50);
+
+DELIMITER **
+
+Create trigger pre_emp_insert
+before insert on Employee 
+for each row 
+begin 
+	if new.gender = 'M' then
+		set new.firstName = concat('Mr ', new.firstName);
+    else
+		set new.firstName = concat('Ms ', new.firstName);
+    end if;    
+end **
+
+DELIMITER ; 
+
+
+select * from employee;
+
+INSERT INTO Employee (firstName, lastname, age, email, gender)
+VALUES 
+    ('Deepak', 'Rao', 33, 'deepak.rao@example.com', 'M'),
+    ('Meera', 'Nair', 27, 'meera.nair@example.com', 'F'),
+    ('Karan', 'Gupta', 31, 'karan.gupta@example.com', 'M'),
+    ('Leena', 'Arora', 28, 'leena.arora@example.com', 'F'),
+    ('Mohan', 'Yadav', 29, 'mohan.yadav@example.com', 'M'),
+    ('Rita', 'Bansal', 30, 'rita.bansal@example.com', 'F'),
+    ('Amitabh', 'Singh', 34, 'amitabh.singh@example.com', 'M'),
+    ('Pooja', 'Sinha', 26, 'pooja.sinha@example.com', 'F');
+
+
