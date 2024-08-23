@@ -38,3 +38,43 @@ alter table Orders drop column order_description;
 
 ALTER TABLE Orders
 CHANGE COLUMN order_descr order_description text;
+
+
+use testApplication;
+
+create table Employee(
+firstName Varchar(50), 
+lastname text,
+fullName varchar(100) generated always as (concat(firstName, ' ', lastName)) stored,
+empId int not null auto_increment,
+primary key(empId)
+) auto_increment = 1000; 
+
+INSERT INTO Employee(firstName, lastName, empId)
+VALUES 
+    ('Parul', 'Raut', 17),
+    ('Sujal', 'Raut', 18),
+    ('Suresh', 'Raut', 19),
+    ('Madhumita', 'Raut', 20),
+    ('Pranjal', 'Raut', 21);
+
+select * from Employee;
+
+create table Employees(
+firstName Varchar(50), 
+lastname text,
+fullName varchar(100) generated always as (concat(firstName, ' ', lastName)) virtual,
+empId int not null auto_increment,
+primary key(empId)
+) auto_increment = 1000; 
+
+INSERT INTO Employees(firstName, lastName, empId)
+VALUES 
+    ('Parul', 'Raut', 17),
+    ('Sujal', 'Raut', 18),
+    ('Suresh', 'Raut', 19),
+    ('Madhumita', 'Raut', 20),
+    ('Pranjal', 'Raut', 21);
+
+select * from Employees;
+
