@@ -137,3 +137,46 @@ VALUES
     ('Pooja', 'Sinha', 26, 'pooja.sinha@example.com', 'F');
 
 
+
+delimiter $$
+create procedure handle_sql_exception2()
+begin
+	declare continue handler for sqlexception
+    begin
+		select 'exception generat';
+    end;
+    
+	INSERT INTO Employee (firstName, lastname, age, email, gender) VALUES ('Amit', null, 30, 'amit.sharma@example.com', 'M');
+	INSERT INTO Employee (firstName, lastname, age, email, gender) VALUES ('Amit', 'khurana', 30, 'amit.sharma@example.com', 'M');
+
+end$$
+
+DELIMITER ; 
+
+call handle_sql_exception2();
+
+INSERT INTO Employee (firstName, lastname, age, email, gender) VALUES ('Amit', 'khurana', 30, 'amit.sharma@example.com', 'M');
+
+alter table Employee modify column lastName text not null;
+
+SET SQL_SAFE_UPDATES = 0;
+
+delete from Employee where lastname is null;
+SET SQL_SAFE_UPDATES = 1;
+
+
+delimiter $$
+create procedure handle_sql_exception6()
+begin
+	declare continue handler for sqlstate  '45000'
+    begin
+		select 'exception generat';
+    end;
+    
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Custom exception generated';
+	select * from Employee where firstName = 'Amit';
+end$$
+
+DELIMITER ; 
+
+call handle_sql_exception6();
