@@ -136,6 +136,79 @@ VALUES
     ('Amitabh', 'Singh', 34, 'amitabh.singh@example.com', 'M'),
     ('Pooja', 'Sinha', 26, 'pooja.sinha@example.com', 'F');
 
+use testApplication;
+
+create table Products(
+	id int not null,
+    name text not null,
+    details json);
+    
+insert into Products(Product_id, name, details) values(12, "charger", '["1200", "samsung", "26-08-2024"]');  
+insert into Products(Product_id, name, details) values(13, "earphone", '["120", "samsung", "27-07-2024"]');      
+insert into Products(Product_id, name, details) values(14, "joystick", '["1300", "samsung", "20-06-2024"]');    
+insert into Products(Product_id, name, details) values(15, "purse", '["50200", "Dior", "29-05-2024"]');    
+insert into Products(Productid, name, details) values(16, "lipstick", '["7200", "Rare-Beauty", "23-07-2024"]');    
+
+select * from Products;
+
+select json_extract(details, '$[0]') as price from Products;
+
+select json_extract(details, '$[1]') as producer from Products;
+
+create table produce(
+	id int not null,
+	name text not null,
+    details text
+    );
+
+SELECT id, 
+    name,
+    SUBSTRING_INDEX(details, ',', 1) AS price,
+    SUBSTRING_INDEX(details, ',', 2) AS date_of_produce
+FROM 
+    produce
+where 
+	name = 'hand bag';
+    
+insert into produce(id, name, details) values( 25, "purse", '51200, Dior, 23-12-2024'); 
+insert into produce(id, name, details) values( 35, "hand bag", '40200, puma, 29-02-2024'); 
+insert into produce(id, name, details) values( 45, "bag", '1100, `american tourister`, 19-10-2024');  
+
+insert into produce(id, name, details) values( 65, "Car", '110000, Tesla, black, 2-seater, 19-10-2024');  
+
+insert into produce(id, name, details) values( 75, "Car", '110000 : porshe :  white : 2-seater : 25-10-2024');  
+
+select * from Produce;
+
+
+select id, TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(details, ':', 3), ':', -1)) AS colour
+from produce
+where 
+ name = "Car";
+    
+create table customer(customer_id int not null primary key auto_increment, name text not null, email varchar(20) not null);
+
+desc products;
+
+create table purchase(
+purchase_id int not null primary key,
+cust_id int,
+prod_id int,
+purchase_date date,
+constraint foreign_key_constraint1 foreign key(cust_id) references customer(customer_id),
+constraint foreign_key_constraint2 foreign key(prod_id) references Products(product_id)
+); 
+
+alter table products add primary key(product_id);
+
+SET SQL_SAFE_UPDATES = 0;
+DELETE FROM products WHERE product_id = 15;
+set Sql_safe_updates = 1;
+
+select * from Products;
+
+desc purchase;
+
 
 
 delimiter $$
