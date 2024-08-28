@@ -250,6 +250,61 @@ begin
 	select * from Employee where firstName = 'Amit';
 end$$
 
+
+
+use testApplication;
+desc purchase;
+
+select * from products;
+select * from customer;
+
+insert into customer(customer_id, name, email) values(12, "Parul", "parul@Raut.in");
+insert into customer(customer_id, name, email) values(14, "sujal", "sujal@Raut.in");
+insert into customer(customer_id, name, email) values(16, "suresh", "suresh@Raut.in");
+insert into customer(customer_id, name, email) values(18, "madhumita", "madhu@Raut.in");
+
+insert into purchase(purchase_id, cust_id, prod_id, purchase_date) values(34, 12, 15, "2024-08-12");
+insert into purchase(purchase_id, cust_id, prod_id, purchase_date) values(35, 14, 16, "2024-08-10");
+
+select * from purchase;
+
+update products set product_id = 25 where product_id = 15;
+
+alter table purchase drop constraint fk_customer;
+
+alter table purchase add constraint fk_customer foreign key(cust_id) references customer(customer_id);
+
+
+create table regional_sales(
+region text,
+sales_amt float,
+period text
+);
+
+
+insert into regional_sales(region, sales_amt, period) values('east', 30000.00, 'Q1');
+insert into regional_sales(region, sales_amt, period) values('west', 30100.00, 'Q2');
+insert into regional_sales(region, sales_amt, period) values('north', 30200.00, 'Q4');
+insert into regional_sales(region, sales_amt, period) values('east', 30300.00, 'Q3');
+insert into regional_sales(region, sales_amt, period) values('north-east', 30400.00, 'Q2');
+insert into regional_sales(region, sales_amt, period) values('east', 30300.00, 'Q4');
+insert into regional_sales(region, sales_amt, period) values('west', 30700.00, 'Q2');
+insert into regional_sales(region, sales_amt, period) values('east', 30800.00, 'Q1');
+
+select * from regional_sales;
+
+SELECT  period, region, max(sales_amt) AS total
+FROM regional_sales
+GROUP BY period, region WITH ROLLUP;
+
+
+SELECT region, period, SUM(sales_amt) AS total
+FROM regional_sales
+GROUP BY CUBE(region, period);
+
+
+
+
 DELIMITER ; 
 
 call handle_sql_exception6();
