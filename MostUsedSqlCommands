@@ -348,3 +348,44 @@ GROUP BY CUBE(region, period);
 DELIMITER ; 
 
 call handle_sql_exception6();
+
+
+
+use testApplication;
+
+SHOW VARIABLES LIKE 'secure_file_priv';
+
+select * from Orders where order_id = 6 into dumpfile 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\dumpfile.txt';
+
+select * from Orders;
+
+create table Employee1(
+emp_id int primary key not null,
+emp_name text not null,
+emp_email text not null
+); 
+
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Employees1.txt' 
+INTO TABLE employee1
+FIELDS TERMINATED BY ',' 
+OPTIONALLY ENCLOSED BY '"'
+LINES TERMINATED BY '\r\n'
+(emp_id, emp_name, emp_email);
+
+select * from employee1;
+
+select emp_id, emp_name, emp_email 
+into outfile "C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Employees1_Outputfile1.txt"
+fields terminated by ','
+lines terminated by '\r\n' 
+from employee1;
+
+select * from orders 
+table_loop : loop 
+if order_id > 24
+leave 
+else 
+continue
+end if;   
+ 
