@@ -381,11 +381,88 @@ fields terminated by ','
 lines terminated by '\r\n' 
 from employee1;
 
-select * from orders 
-table_loop : loop 
-if order_id > 24
-leave 
-else 
-continue
-end if;   
- 
+
+
+DELIMITER $$
+
+CREATE PROCEDURE loop_example1()
+BEGIN
+    DECLARE done BOOLEAN DEFAULT 0;
+    DECLARE id INT;
+    DECLARE orders_cursor CURSOR FOR SELECT order_id FROM orders;   -- create cursor 
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    OPEN orders_cursor;  -- open cursor 
+    
+    table_loop: LOOP
+        FETCH orders_cursor INTO id;  -- fetch cursor 
+
+        IF done THEN
+            LEAVE table_loop;
+        END IF;
+
+        IF id = 25 THEN
+            set done = 1;
+        ELSE
+            -- Update the order_id in the orders table
+            UPDATE orders SET quantity = quantity + 1 WHERE order_id = id;
+        END IF;
+    END LOOP;
+
+    CLOSE orders_cursor;   -- close cursor 
+
+    -- Return the updated orders table content
+    SELECT * FROM orders;
+
+END $$
+
+DELIMITER ;
+
+call loop_example1();
+
+select * from Orders;
+
+create table emp(
+emp_id int primary key,
+name text, 
+salary float
+)
+partition by range(emp_id) (
+partition p1 values less than (6), 
+partition p2 values less than (13),
+partition p3 values less than (19),
+partition p4 values less than maxvalue
+);
+
+
+INSERT INTO emp (emp_id, name, salary) VALUES 
+(1, 'Alice', 50000),
+(2, 'Bob', 52000),
+(3, 'Charlie', 55000),
+(4, 'David', 53000),
+(5, 'Eve', 58000),
+(6, 'Frank', 60000),
+(7, 'Grace', 62000),
+(8, 'Hank', 61000),
+(9, 'Ivy', 63000),
+(10, 'Jack', 64000),
+(11, 'Kara', 65000),
+(12, 'Leo', 66000),
+(13, 'Mia', 67000),
+(14, 'Nina', 68000),
+(15, 'Oscar', 69000),
+(16, 'Paul', 70000),
+(17, 'Quinn', 71000),
+(18, 'Rita', 72000),
+(19, 'Sam', 73000),
+(20, 'Tina', 74000),
+(21, 'Uma', 75000),
+(22, 'Vince', 76000),
+(23, 'Wade', 77000),
+(24, 'Xena', 78000),
+(25, 'Yara', 79000);
+
+explain select * from emp where emp_id = 13; 
+
+
+
