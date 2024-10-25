@@ -1,0 +1,16 @@
+USE `testapplication`;
+DROP procedure IF EXISTS `getOrdersByPriceAndInDateBetween`;
+
+USE `testapplication`;
+DROP procedure IF EXISTS `testapplication`.`getOrdersByPriceAndInDateBetween`;
+;
+
+DELIMITER $$
+USE `testapplication`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getOrdersByPriceAndInDateBetween`(IN price float, IN startDate date, IN endDate date)
+BEGIN
+	  select * from Orders o where o.Price >= price and o.Order_Date between startDate and endDate order by o.Price desc;
+END$$
+
+DELIMITER ;
+;

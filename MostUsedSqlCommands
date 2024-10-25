@@ -1,0 +1,468 @@
+use testApplication;
+insert into orders(Order_Details, Quantity, Price, Order_Description, Order_Date) values("Note book", 12, 30.50, 'Hard bind silky cover with already provided common text for reference with King size 200 pages', '2024-09-09');
+insert into orders(Order_Details, Quantity, Price, Order_Description, Order_Date) values("Lipstick", 12, 30.50, 'Extra large size, highly pigmented, Red 2050 shade', '2024-09-09');
+insert into orders(Order_Details, Quantity, Price, Order_Description, Order_Date) values("Lipstick", 12, 30.50, 'Medium/Extra large size, highly pigmented, pink 2050 shade', '2024-09-09');
+
+
+create fulltext index full_text_search on Orders(Order_Description);
+create fulltext index full_text_search_in_details on Orders(Order_Details);
+select * from Orders where match(order_Description) against('+size, -king' in boolean mode); 
+select * from Orders where match(order_Description) against('Extra' with query expansion); 
+
+select * from Orders where match(order_Description, order_Details) against('+book' in boolean mode); 
+
+SHOW INDEX FROM Orders;
+create fulltext index full_text_combied on Orders(order_Description, order_Details) ; 
+SELECT * FROM Orders WHERE MATCH(Order_Description, Order_Details) AGAINST('cooker' IN BOOLEAN MODE);
+
+select * from Orders;
+
+ALTER TABLE Orders
+DROP INDEX full_text;
+
+
+-- in boolean mode with query expansion in natural language
+
+select * from Orders where price = 30.50;
+
+alter table orders add column order_descr text after order_date; 
+select * from Orders;
+
+SET SQL_SAFE_UPDATES = 0;
+
+update Orders set order_descr = order_description;
+
+SET SQL_SAFE_UPDATES = 1;
+
+alter table Orders drop column order_description;
+
+ALTER TABLE Orders
+CHANGE COLUMN order_descr order_description text;
+
+
+use testApplication;
+
+create table Employee(
+firstName Varchar(50), 
+lastname text,
+fullName varchar(100) generated always as (concat(firstName, ' ', lastName)) stored,
+empId int not null auto_increment,
+primary key(empId)
+) auto_increment = 1000; 
+
+INSERT INTO Employee(firstName, lastName, empId)
+VALUES 
+    ('Parul', 'Raut', 17),
+    ('Sujal', 'Raut', 18),
+    ('Suresh', 'Raut', 19),
+    ('Madhumita', 'Raut', 20),
+    ('Pranjal', 'Raut', 21);
+
+select * from Employee;
+
+create table Employees(
+firstName Varchar(50), 
+lastname text,
+fullName varchar(100) generated always as (concat(firstName, ' ', lastName)) virtual,
+empId int not null auto_increment,
+primary key(empId)
+) auto_increment = 1000; 
+
+INSERT INTO Employees(firstName, lastName, empId)
+VALUES 
+    ('Parul', 'Raut', 17),
+    ('Sujal', 'Raut', 18),
+    ('Suresh', 'Raut', 19),
+    ('Madhumita', 'Raut', 20),
+    ('Pranjal', 'Raut', 21);
+
+select * from Employees;
+
+
+drop table employee;
+
+DROP TABLE IF EXISTS Employee;
+
+CREATE TABLE Employee (
+    firstName VARCHAR(50),
+    lastname TEXT,
+    fullName VARCHAR(100) GENERATED ALWAYS AS (CONCAT(firstName, ' ', lastname)) STORED,
+    empId INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    age INT,
+    email VARCHAR(20),
+    gender VARCHAR(1)
+) AUTO_INCREMENT = 1000;
+
+INSERT INTO Employee (firstName, lastname, age, email, gender)
+VALUES 
+    ('Amit', 'Sharma', 30, 'amit.sharma@example.com', 'M'),
+    ('Nina', 'Gupta', 25, 'nina.gupta@example.com', 'F'),
+    ('Ravi', 'Kumar', 28, 'ravi.kumar@example.com', 'M'),
+    ('Sonia', 'Mehta', 32, 'sonia.mehta@example.com', 'F'),
+    ('Raj', 'Singh', 27, 'raj.singh@example.com', 'M'),
+    ('Anita', 'Desai', 29, 'anita.desai@example.com', 'F'),
+    ('Vikram', 'Patel', 35, 'vikram.patel@example.com', 'M'),
+    ('Priya', 'Jain', 26, 'priya.jain@example.com', 'F');
+
+ALTER TABLE Employee
+MODIFY COLUMN email VARCHAR(50);
+
+DELIMITER **
+
+Create trigger pre_emp_insert
+before insert on Employee 
+for each row 
+begin 
+	if new.gender = 'M' then
+		set new.firstName = concat('Mr ', new.firstName);
+    else
+		set new.firstName = concat('Ms ', new.firstName);
+    end if;    
+end **
+
+DELIMITER ; 
+
+
+select * from employee;
+
+INSERT INTO Employee (firstName, lastname, age, email, gender)
+VALUES 
+    ('Deepak', 'Rao', 33, 'deepak.rao@example.com', 'M'),
+    ('Meera', 'Nair', 27, 'meera.nair@example.com', 'F'),
+    ('Karan', 'Gupta', 31, 'karan.gupta@example.com', 'M'),
+    ('Leena', 'Arora', 28, 'leena.arora@example.com', 'F'),
+    ('Mohan', 'Yadav', 29, 'mohan.yadav@example.com', 'M'),
+    ('Rita', 'Bansal', 30, 'rita.bansal@example.com', 'F'),
+    ('Amitabh', 'Singh', 34, 'amitabh.singh@example.com', 'M'),
+    ('Pooja', 'Sinha', 26, 'pooja.sinha@example.com', 'F');
+
+use testApplication;
+
+create table Products(
+	id int not null,
+    name text not null,
+    details json);
+    
+insert into Products(Product_id, name, details) values(12, "charger", '["1200", "samsung", "26-08-2024"]');  
+insert into Products(Product_id, name, details) values(13, "earphone", '["120", "samsung", "27-07-2024"]');      
+insert into Products(Product_id, name, details) values(14, "joystick", '["1300", "samsung", "20-06-2024"]');    
+insert into Products(Product_id, name, details) values(15, "purse", '["50200", "Dior", "29-05-2024"]');    
+insert into Products(Productid, name, details) values(16, "lipstick", '["7200", "Rare-Beauty", "23-07-2024"]');    
+
+select * from Products;
+
+select json_extract(details, '$[0]') as price from Products;
+
+select json_extract(details, '$[1]') as producer from Products;
+
+create table produce(
+	id int not null,
+	name text not null,
+    details text
+    );
+
+SELECT id, 
+    name,
+    SUBSTRING_INDEX(details, ',', 1) AS price,
+    SUBSTRING_INDEX(details, ',', 2) AS date_of_produce
+FROM 
+    produce
+where 
+	name = 'hand bag';
+    
+insert into produce(id, name, details) values( 25, "purse", '51200, Dior, 23-12-2024'); 
+insert into produce(id, name, details) values( 35, "hand bag", '40200, puma, 29-02-2024'); 
+insert into produce(id, name, details) values( 45, "bag", '1100, `american tourister`, 19-10-2024');  
+
+insert into produce(id, name, details) values( 65, "Car", '110000, Tesla, black, 2-seater, 19-10-2024');  
+
+insert into produce(id, name, details) values( 75, "Car", '110000 : porshe :  white : 2-seater : 25-10-2024');  
+
+select * from Produce;
+
+
+select id, TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(details, ':', 3), ':', -1)) AS colour
+from produce
+where 
+ name = "Car";
+    
+create table customer(customer_id int not null primary key auto_increment, name text not null, email varchar(20) not null);
+
+desc products;
+
+create table purchase(
+purchase_id int not null primary key,
+cust_id int,
+prod_id int,
+purchase_date date,
+constraint foreign_key_constraint1 foreign key(cust_id) references customer(customer_id),
+constraint foreign_key_constraint2 foreign key(prod_id) references Products(product_id)
+); 
+
+alter table products add primary key(product_id);
+
+SET SQL_SAFE_UPDATES = 0;
+DELETE FROM products WHERE product_id = 15;
+set Sql_safe_updates = 1;
+
+select * from Products;
+
+desc purchase;
+
+
+
+delimiter $$
+create procedure handle_sql_exception2()
+begin
+	declare continue handler for sqlexception
+    begin
+		select 'exception generat';
+    end;
+    
+	INSERT INTO Employee (firstName, lastname, age, email, gender) VALUES ('Amit', null, 30, 'amit.sharma@example.com', 'M');
+	INSERT INTO Employee (firstName, lastname, age, email, gender) VALUES ('Amit', 'khurana', 30, 'amit.sharma@example.com', 'M');
+
+end$$
+
+DELIMITER ; 
+
+call handle_sql_exception2();
+
+INSERT INTO Employee (firstName, lastname, age, email, gender) VALUES ('Amit', 'khurana', 30, 'amit.sharma@example.com', 'M');
+
+alter table Employee modify column lastName text not null;
+
+SET SQL_SAFE_UPDATES = 0;
+
+delete from Employee where lastname is null;
+SET SQL_SAFE_UPDATES = 1;
+
+
+delimiter $$
+create procedure handle_sql_exception6()
+begin
+	declare continue handler for sqlstate  '45000'
+    begin
+		select 'exception generat';
+    end;
+    
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Custom exception generated';
+	select * from Employee where firstName = 'Amit';
+end$$
+
+use testApplication;
+insert into orders(Order_Details, Quantity, Price, Order_Description, Order_Date) values("Note book", 12, 30.50, 'Hard bind silky cover with already provided common text for reference with King size 200 pages', '2024-09-09');
+insert into orders(Order_Details, Quantity, Price, Order_Description, Order_Date) values("Lipstick", 12, 30.50, 'Extra large size, highly pigmented, Red 2050 shade', '2024-09-09');
+insert into orders(Order_Details, Quantity, Price, Order_Description, Order_Date) values("Lipstick", 12, 30.50, 'Medium/Extra large size, highly pigmented, pink 2050 shade', '2024-09-09');
+
+
+create fulltext index full_text_search on Orders(Order_Description);
+create fulltext index full_text_search_in_details on Orders(Order_Details);
+select * from Orders where match(order_Description) against('+size, -king' in boolean mode); 
+select * from Orders where match(order_Description) against('Extra' with query expansion); 
+
+select * from Orders where match(order_Description, order_Details) against('+book' in boolean mode); 
+
+SHOW INDEX FROM Orders;
+create fulltext index full_text_combied on Orders(order_Description, order_Details) ; 
+SELECT * FROM Orders WHERE MATCH(Order_Description, Order_Details) AGAINST('cooker' IN BOOLEAN MODE);
+
+select * from Orders;
+
+ALTER TABLE Orders
+DROP INDEX full_text;
+
+
+-- in boolean mode with query expansion in natural language
+
+select * from Orders where price = 30.50;
+
+alter table orders add column order_descr text after order_date; 
+select * from Orders;
+
+SET SQL_SAFE_UPDATES = 0;
+
+update Orders set order_descr = order_description;
+
+SET SQL_SAFE_UPDATES = 1;
+
+alter table Orders drop column order_description;
+
+ALTER TABLE Orders
+CHANGE COLUMN order_descr order_description text;
+
+
+use testApplication;
+desc purchase;
+
+select * from products;
+select * from customer;
+
+insert into customer(customer_id, name, email) values(12, "Parul", "parul@Raut.in");
+insert into customer(customer_id, name, email) values(14, "sujal", "sujal@Raut.in");
+insert into customer(customer_id, name, email) values(16, "suresh", "suresh@Raut.in");
+insert into customer(customer_id, name, email) values(18, "madhumita", "madhu@Raut.in");
+
+insert into purchase(purchase_id, cust_id, prod_id, purchase_date) values(34, 12, 15, "2024-08-12");
+insert into purchase(purchase_id, cust_id, prod_id, purchase_date) values(35, 14, 16, "2024-08-10");
+
+select * from purchase;
+
+update products set product_id = 25 where product_id = 15;
+
+alter table purchase drop constraint fk_customer;
+
+alter table purchase add constraint fk_customer foreign key(cust_id) references customer(customer_id);
+
+
+create table regional_sales(
+region text,
+sales_amt float,
+period text
+);
+
+
+insert into regional_sales(region, sales_amt, period) values('east', 30000.00, 'Q1');
+insert into regional_sales(region, sales_amt, period) values('west', 30100.00, 'Q2');
+insert into regional_sales(region, sales_amt, period) values('north', 30200.00, 'Q4');
+insert into regional_sales(region, sales_amt, period) values('east', 30300.00, 'Q3');
+insert into regional_sales(region, sales_amt, period) values('north-east', 30400.00, 'Q2');
+insert into regional_sales(region, sales_amt, period) values('east', 30300.00, 'Q4');
+insert into regional_sales(region, sales_amt, period) values('west', 30700.00, 'Q2');
+insert into regional_sales(region, sales_amt, period) values('east', 30800.00, 'Q1');
+
+select * from regional_sales;
+
+SELECT  period, region, max(sales_amt) AS total
+FROM regional_sales
+GROUP BY period, region WITH ROLLUP;
+
+
+SELECT region, period, SUM(sales_amt) AS total
+FROM regional_sales
+GROUP BY CUBE(region, period);
+
+
+
+
+DELIMITER ; 
+
+call handle_sql_exception6();
+
+
+
+use testApplication;
+
+SHOW VARIABLES LIKE 'secure_file_priv';
+
+select * from Orders where order_id = 6 into dumpfile 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\dumpfile.txt';
+
+select * from Orders;
+
+create table Employee1(
+emp_id int primary key not null,
+emp_name text not null,
+emp_email text not null
+); 
+
+
+LOAD DATA INFILE 'C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Employees1.txt' 
+INTO TABLE employee1
+FIELDS TERMINATED BY ',' 
+OPTIONALLY ENCLOSED BY '"'
+LINES TERMINATED BY '\r\n'
+(emp_id, emp_name, emp_email);
+
+select * from employee1;
+
+select emp_id, emp_name, emp_email 
+into outfile "C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\Employees1_Outputfile1.txt"
+fields terminated by ','
+lines terminated by '\r\n' 
+from employee1;
+
+
+
+DELIMITER $$
+
+CREATE PROCEDURE loop_example1()
+BEGIN
+    DECLARE done BOOLEAN DEFAULT 0;
+    DECLARE id INT;
+    DECLARE orders_cursor CURSOR FOR SELECT order_id FROM orders;   -- create cursor 
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    OPEN orders_cursor;  -- open cursor 
+    
+    table_loop: LOOP
+        FETCH orders_cursor INTO id;  -- fetch cursor 
+
+        IF done THEN
+            LEAVE table_loop;
+        END IF;
+
+        IF id = 25 THEN
+            set done = 1;
+        ELSE
+            -- Update the order_id in the orders table
+            UPDATE orders SET quantity = quantity + 1 WHERE order_id = id;
+        END IF;
+    END LOOP;
+
+    CLOSE orders_cursor;   -- close cursor 
+
+    -- Return the updated orders table content
+    SELECT * FROM orders;
+
+END $$
+
+DELIMITER ;
+
+call loop_example1();
+
+select * from Orders;
+
+create table emp(
+emp_id int primary key,
+name text, 
+salary float
+)
+partition by range(emp_id) (
+partition p1 values less than (6), 
+partition p2 values less than (13),
+partition p3 values less than (19),
+partition p4 values less than maxvalue
+);
+
+
+INSERT INTO emp (emp_id, name, salary) VALUES 
+(1, 'Alice', 50000),
+(2, 'Bob', 52000),
+(3, 'Charlie', 55000),
+(4, 'David', 53000),
+(5, 'Eve', 58000),
+(6, 'Frank', 60000),
+(7, 'Grace', 62000),
+(8, 'Hank', 61000),
+(9, 'Ivy', 63000),
+(10, 'Jack', 64000),
+(11, 'Kara', 65000),
+(12, 'Leo', 66000),
+(13, 'Mia', 67000),
+(14, 'Nina', 68000),
+(15, 'Oscar', 69000),
+(16, 'Paul', 70000),
+(17, 'Quinn', 71000),
+(18, 'Rita', 72000),
+(19, 'Sam', 73000),
+(20, 'Tina', 74000),
+(21, 'Uma', 75000),
+(22, 'Vince', 76000),
+(23, 'Wade', 77000),
+(24, 'Xena', 78000),
+(25, 'Yara', 79000);
+
+explain select * from emp where emp_id = 13; 
+
+
+

@@ -1,0 +1,14 @@
+CREATE DEFINER=`root`@`localhost` PROCEDURE `average_min_count_order_between`(IN startDate Date, IN endDate Date, OUT avrg Float, OUT minPrice Float, Out orderCount int)
+BEGIN
+SELECT 
+        IFNULL(AVG(o.Price), 0), 
+        IFNULL(MIN(o.Price), 0), 
+        COUNT(*)
+    INTO 
+        avrg, 
+        minPrice, 
+        orderCount 
+    FROM Orders o 
+    WHERE o.Order_Date BETWEEN startDate AND endDate;
+    
+END

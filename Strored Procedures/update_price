@@ -1,0 +1,22 @@
+USE `testapplication`;
+DROP procedure IF EXISTS `update_price`;
+
+USE `testapplication`;
+DROP procedure IF EXISTS `testapplication`.`update_price`;
+;
+
+DELIMITER $$
+USE `testapplication`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_price`(IN price Int, IN pct_change Numeric(5,2), OUT update_count Int)
+BEGIN           
+	-- Disable safe update mode
+    SET SQL_SAFE_UPDATES = 0;
+	update Orders o set o.Price = (1 + pct_change/100) * o.Price where o.Price >= price;
+    set update_count = ROW_COUNT();
+    -- Enable safe update mode
+    SET SQL_SAFE_UPDATES = 1;
+END$$
+
+DELIMITER ;
+;
+
