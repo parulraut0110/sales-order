@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Order Details</title>
+</head>
+<body>
+    <h1>Order Details</h1>
+    <p>Order ID: <span th:text="${order.orderId}"></span></p>
+    <p>Item Name: <span th:text="${itemName}"></span></p>
+    <p>Order Details: <span th:text="${order.orderDetails}"></span></p>
+    <p>Quantity: <span th:text="${order.quantity}"></span></p>
+    <p>Order Price: <span th:text="${order.orderPrice}"></span></p>
+    <p>Order Date: <span th:text="${#dates.format(order.orderDate, 'yyyy-MM-dd')}"></span></p>
+</body>
+</html>
