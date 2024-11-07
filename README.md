@@ -22,13 +22,15 @@ Detailed Description
 Sales Order is a web application developed to automate the process of handling and tracking sales orders for businesses. This project aims to simplify the complexities involved in order management, customer interaction, and inventory control. It provides a user-friendly interface where users can create, manage, and monitor sales orders through a centralized system, ensuring efficient order fulfillment and enhanced business operations.
 
 Key Features:
-Sales Order Creation: Users can seamlessly create new sales orders, selecting products, specifying quantities, and defining customer information and shipping details.
+
 Order Status Tracking: Sales orders can be tracked from the moment they are created through various stages such as processing, shipping, and completion.
-Customer Management: Maintain a detailed list of customers with order histories, contact information, and order preferences to provide personalized services.
+
 Inventory Control: Integrated with inventory systems to automatically update stock levels upon order creation and fulfillment, preventing issues like stockouts or over-ordering.
+
 Detailed Reports: Generate reports that provide insights into sales trends, inventory status, and customer preferences, which can aid in decision-making and business strategy formulation.
+
 Order Editing and Deletion: Sales orders can be modified or canceled, depending on the business requirement, and updates are reflected across all related systems.
-User Authentication: Secure login system to ensure that only authorized users can access and modify order details.
+
 Technologies Utilized:
 Backend: Spring Boot is used for building the RESTful API, handling data processing, and managing business logic related to sales orders.
 Database:
