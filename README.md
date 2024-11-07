@@ -8,22 +8,19 @@
 
 ## Introduction
 
+Sales Order is a web application developed to automate the process of handling and tracking sales orders for businesses. This project aims to simplify the complexities involved in order management, customer interaction, and inventory control. An interface where we can create, manage, and monitor sales orders through a system, ensuring efficient order fulfillment and enhanced business operations.
 
-### Key Features:
-- Feature 1
-- Feature 2
-- Feature 3
 
 ---
 
 ## Project Description
 
 Detailed Description
-Sales Order is a web application developed to automate the process of handling and tracking sales orders for businesses. This project aims to simplify the complexities involved in order management, customer interaction, and inventory control. It provides a user-friendly interface where users can create, manage, and monitor sales orders through a centralized system, ensuring efficient order fulfillment and enhanced business operations.
+Sales Order is a web application developed to automate the process of handling and tracking sales orders for businesses. This project aims to simplify the complexities involved in order management, customer interaction, and inventory control. An interface where we can create, manage, and monitor sales orders through a system, ensuring efficient order fulfillment and enhanced business operations.
 
 Key Features:
 
-Order Status Tracking: Sales orders can be tracked from the moment they are created through various stages such as processing, shipping, and completion.
+Order Tracking: Sales orders can be tracked from the moment they are created through various filters.
 
 Inventory Control: Integrated with inventory systems to automatically update stock levels upon order creation and fulfillment, preventing issues like stockouts or over-ordering.
 
